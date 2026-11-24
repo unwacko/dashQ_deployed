@@ -38,7 +38,7 @@ sns.set_theme(style="whitegrid", font="Inter", rc={
     "axes.edgecolor": "#E5E7EA", "grid.color": "#EEF0F2", "grid.linestyle": "--",
     "axes.labelcolor": MUTED, "xtick.color": MUTED, "ytick.color": MUTED,
     "axes.spines.top": False, "axes.spines.right": False, "axes.spines.left": False,
-    "font.size": 10, "svg.fonttype": "none",
+    "font.size": 10, "svg.fonttype": "path",   # letters drawn as shapes, so the font looks right anywhere
 })
 
 CACHE = {}
@@ -195,3 +195,14 @@ def all_charts(data, business_id, days):
 
     CACHE[key] = (time.time(), charts)
     return charts
+
+
+def sparkline(values):
+    """The small "average wait" line on the home page."""
+    fig = Figure(figsize=(4.0, 1.3))
+    ax = fig.subplots()
+    ax.fill_between(range(len(values)), values, min(values) - 1, color=BLUE, alpha=0.15)
+    ax.plot(range(len(values)), values, color=BLUE, linewidth=2.5)
+    ax.set_axis_off()
+    ax.margins(x=0)
+    return to_svg(fig, "sparkline")

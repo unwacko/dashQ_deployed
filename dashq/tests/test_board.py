@@ -1,106 +1,59 @@
-from conftest import sign_up
+from conftest import first_line, make_business, tokens_in
+from services import pages, queue
 
 
-def add(client, line_id, name):
-    return client.post(f"/app/line/{line_id}/add", data={"name": name})
+def test_in_person_call_next_and_done(db):
+    business = make_business(db)
+    line = first_line(db, business)
+    queue.create_ticket(db, business, "ip", name="Ravi", line_id=line)
+    queue.create_ticket(db, business, "ip", name="Meera", line_id=line)
 
-
-def tokens_in(db, line_id):
-    rows = db.execute("SELECT token FROM tickets WHERE line_id = ? AND status IN ('waiting', 'called') "
-                      "ORDER BY position, id", (line_id,)).fetchall()
-    return [row["token"] for row in rows]
-
-
-def test_in_person_call_next_and_done(client, db):
-    sign_up(client)
-    line = db.execute("SELECT id FROM lines").fetchone()["id"]
-    add(client, line, "Ravi")
-    add(client, line, "Meera")
-    assert db.execute("SELECT source FROM tickets").fetchone()["source"] == "ip"
-
-    response = client.post(f"/app/line/{line}/next")
-    assert b"Calling" in response.data and b"001" in response.data
-    first = db.execute("SELECT * FROM tickets WHERE token = '001'").fetchone()
-    assert first["status"] == "called" and first["called_at"]
-
-    client.post(f"/app/ticket/{first['id']}/done")
-    assert db.execute("SELECT status FROM tickets WHERE id = ?", (first["id"],)).fetchone()["status"] == "done"
+    called = queue.call_next(db, business["id"], line)
+    assert called["token"] == "001" and called["status"] == "called" and called["called_at"]
+    queue.complete_ticket(db, business["id"], called["id"])
     assert tokens_in(db, line) == ["002"]
 
 
-def test_reorder_and_move_between_lines(client, db):
-    sign_up(client)
-    client.post("/app/settings/lines/add", data={"name": "Ready"})
-    first, second = [row["id"] for row in db.execute("SELECT id FROM lines ORDER BY position").fetchall()]
-    for name in ["A", "B", "C"]:
-        add(client, first, name)
-    ids = [row["id"] for row in db.execute("SELECT id FROM tickets ORDER BY id").fetchall()]
+def test_reorder_and_move_between_lines(db):
+    business = make_business(db)
+    queue.add_line(db, business["id"], "Ready")
+    first, second = [line["id"] for line in queue.get_lines(db, business["id"])]
+    ids = [queue.create_ticket(db, business, "ip", name=name, line_id=first)["id"] for name in "ABC"]
 
-    # Drag C to the top
-    client.post(f"/app/ticket/{ids[2]}/move", data={"line_id": first, "before_id": ids[0]})
+    queue.move_ticket(db, business["id"], ids[2], first, ids[0])          # drag C to the top
     assert tokens_in(db, first) == ["003", "001", "002"]
 
-    # Call B, then move it to "Ready": it goes back to waiting there
-    client.post(f"/app/ticket/{ids[1]}/call")
-    client.post(f"/app/ticket/{ids[1]}/move", data={"line_id": second})
+    queue.call_ticket(db, business["id"], ids[1])                         # call B, then move it
+    queue.move_ticket(db, business["id"], ids[1], second)
     assert tokens_in(db, second) == ["002"]
-    assert db.execute("SELECT status FROM tickets WHERE id = ?", (ids[1],)).fetchone()["status"] == "waiting"
+    assert queue.get_ticket(db, business["id"], ids[1])["status"] == "waiting"
 
 
-def test_deleting_a_line_moves_its_people(client, db):
-    sign_up(client)
-    client.post("/app/settings/lines/add", data={"name": "Ready"})
-    first, second = [row["id"] for row in db.execute("SELECT id FROM lines ORDER BY position").fetchall()]
-    add(client, second, "Zoya")
-    client.post(f"/app/settings/lines/{second}", data={"action": "delete"})
+def test_deleting_a_line_moves_its_people(db):
+    business = make_business(db)
+    queue.add_line(db, business["id"], "Ready")
+    first, second = [line["id"] for line in queue.get_lines(db, business["id"])]
+    queue.create_ticket(db, business, "ip", name="Zoya", line_id=second)
+    assert queue.delete_line(db, business["id"], second) is None
     assert tokens_in(db, first) == ["001"]
-    # The last line can't be deleted
-    client.post(f"/app/settings/lines/{first}", data={"action": "delete"})
-    assert db.execute("SELECT COUNT(*) FROM lines").fetchone()[0] == 1
+    assert queue.delete_line(db, business["id"], first) is not None       # the last line stays
 
 
-def test_businesses_cannot_touch_each_other(app, db):
-    owner_a = app.test_client()
-    owner_b = app.test_client()
-    sign_up(owner_a, name="Cafe A", email="a@x.test")
-    sign_up(owner_b, name="Clinic B", email="b@x.test")
-    line_a = db.execute("SELECT id FROM lines WHERE business_id = 1").fetchone()["id"]
-    add(owner_a, line_a, "Secret")
-    ticket = db.execute("SELECT id FROM tickets").fetchone()["id"]
-
-    assert b"Secret" not in owner_b.get("/app/live").data
-    owner_b.post(f"/app/ticket/{ticket}/done")
-    owner_b.post(f"/app/line/{line_a}/add", data={"name": "Intruder"})
-    assert db.execute("SELECT status FROM tickets WHERE id = ?", (ticket,)).fetchone()["status"] == "waiting"
-    assert db.execute("SELECT COUNT(*) FROM tickets WHERE business_id = 2").fetchone()[0] == 0
+def test_businesses_cannot_touch_each_other(db):
+    cafe = make_business(db, "Cafe A", "a@x.test")
+    clinic = make_business(db, "Clinic B", "b@x.test")
+    ticket = queue.create_ticket(db, cafe, "ip", name="Secret")
+    queue.complete_ticket(db, clinic["id"], ticket["id"])
+    assert queue.get_ticket(db, cafe["id"], ticket["id"])["status"] == "waiting"
+    assert all(not line["tickets"] for line in queue.board(db, clinic["id"]))
+    assert queue.create_ticket(db, clinic, "ip", line_id=first_line(db, cafe))["line_id"] != first_line(db, cafe)
 
 
-def test_add_in_person_with_list_items(client, db):
-    sign_up(client)
-    client.post("/app/settings/list/add", data={"name": "Cold coffee"})
-    line = db.execute("SELECT id FROM lines").fetchone()["id"]
-    item = db.execute("SELECT id FROM list_items").fetchone()["id"]
-    board = client.get("/app/live").data
-    assert f'name="qty_{item}"'.encode() in board              # the small list is in the form
-    client.post(f"/app/line/{line}/add", data={"name": "Ravi", f"qty_{item}": "2"})
-    row = db.execute("SELECT name, quantity FROM ticket_items").fetchone()
-    assert (row["name"], row["quantity"]) == ("Cold coffee", 2)
-
-
-def test_customer_stops_alert_and_staff_resend(client, customer, db):
-    sign_up(client)
-    line = db.execute("SELECT id FROM lines").fetchone()["id"]
-    add(client, line, "Ravi")
-    ticket = db.execute("SELECT * FROM tickets").fetchone()
-    client.post(f"/app/ticket/{ticket['id']}/call")
-    slug = db.execute("SELECT slug FROM businesses").fetchone()["slug"]
-    live = f"/b/{slug}/t/{ticket['code']}/live"
-    assert b'data-turn="1"' in customer.get(live).data and b"Stop alert" in customer.get(live).data
-
-    page = customer.post(f"/b/{slug}/t/{ticket['code']}/stop-alert").data
-    assert b'data-turn="0"' in page and b"Alert stopped" in page
-    assert b"Resend alert" in client.get("/app/live").data
-
-    client.post(f"/app/ticket/{ticket['id']}/resend-alert")
-    assert b'data-turn="1"' in customer.get(live).data
-    assert b"Resend alert" not in client.get("/app/live").data
+def test_add_in_person_with_list_items(db):
+    business = make_business(db)
+    pages.add_item(db, business["id"], "Cold coffee")
+    item = pages.get_items(db, business["id"])[0]
+    ticket = queue.create_ticket(db, business, "ip", name="Ravi")
+    chosen = pages.read_choices(db, business["id"], {f"qty_{item['id']}": "2"}, multi=True)
+    queue.set_items(db, business["id"], ticket["id"], chosen)
+    assert queue.board(db, business["id"])[0]["tickets"][0]["order"] == [{"name": "Cold coffee", "quantity": 2}]

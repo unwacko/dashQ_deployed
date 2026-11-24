@@ -18,6 +18,11 @@ if JOURNAL_MODE not in ("WAL", "DELETE"):
 # Azure App Service always sets WEBSITE_SITE_NAME. DASHQ_ENV=production does the same anywhere else.
 IS_PRODUCTION = bool(os.environ.get("WEBSITE_SITE_NAME")) or os.environ.get("DASHQ_ENV") == "production"
 
-# In production we always run behind HTTPS, so cookies are only sent over HTTPS.
-# Locally we use plain http, so this is off unless the env var says so.
-COOKIE_SECURE = IS_PRODUCTION or os.environ.get("COOKIE_SECURE", "0") == "1"
+# Azure expects the app on port 8000. On your laptop it runs on 5050.
+PORT = int(os.environ.get("PORT", "8000" if IS_PRODUCTION else "5050"))
+
+# The cookie that remembers a customer's place in line (and the owner's login) lasts 2 days
+COOKIE_DAYS = 2
+
+# NiceGUI keeps each browser's storage (login, join progress) as files here
+os.environ.setdefault("NICEGUI_STORAGE_PATH", os.path.join(DATA_DIR, "browser-storage"))

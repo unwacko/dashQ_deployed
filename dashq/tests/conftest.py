@@ -1,50 +1,47 @@
 import os
-import sqlite3
 import sys
+import tempfile
 
 import pytest
 
-# Let the tests import app.py from the folder above
+# Every test run uses its own empty data folder (set before main.py or config.py is loaded)
+os.environ["DATA_DIR"] = tempfile.mkdtemp(prefix="dashq-test-")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app import create_app
+import db as database                  # noqa: E402
+from services import accounts, queue   # noqa: E402
+
+# Lets tests click through the real pages without a browser (NiceGUI's "User" helper)
+pytest_plugins = ["nicegui.testing.user_plugin"]
 
 
 @pytest.fixture
-def app(tmp_path):
-    # Each test gets a fresh, empty database in a temporary folder
-    return create_app({"TESTING": True, "DATA_DIR": str(tmp_path), "WTF_CSRF_ENABLED": False})
+def db(tmp_path):
+    """A fresh, empty database for tests that call the Python functions directly."""
+    return database.connect(str(tmp_path / "test.db"))
 
 
-@pytest.fixture
-def client(app):
-    return app.test_client()
+def make_business(db, name="Encave Cafe", email="owner@encave.test", password="password123"):
+    business_id, error = accounts.create_business(db, name, email, password, "Cafe / restaurant")
+    assert error is None
+    return accounts.get_business(db, business_id)
 
 
-@pytest.fixture
-def customer(app):
-    # A second browser: the customer's phone, with its own cookies
-    return app.test_client()
-
-
-@pytest.fixture
-def db(app):
-    # A direct connection, for checking what ended up in the database
-    conn = sqlite3.connect(app.config["DATABASE"])
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys = ON")
-    yield conn
-    conn.close()
-
-
-def sign_up(client, name="Encave Cafe", email="owner@encave.test", password="password123"):
-    return client.post("/app/signup", data={"name": name, "email": email, "password": password, "category": "Cafe / restaurant"})
-
-
-def set_pages(client, **changes):
+def set_pages(db, business, **changes):
     """Save the customer-page settings, starting from the defaults."""
     form = {"welcome_text": "Hi", "ask_name": "required", "ask_phone": "off", "ask_email": "off",
             "show_details": "1", "token_moment": "end", "list_title": "Menu", "extras_title": "Info"}
     form.update(changes)
     form = {key: value for key, value in form.items() if value is not None}
-    return client.post("/app/settings/pages", data=form)
+    assert accounts.save_flow_settings(db, business["id"], form) is None
+    return accounts.get_settings(db, business["id"])
+
+
+def tokens_in(db, line_id):
+    rows = db.execute("SELECT token FROM tickets WHERE line_id = ? AND status IN ('waiting', 'called') "
+                      "ORDER BY position, id", (line_id,)).fetchall()
+    return [row["token"] for row in rows]
+
+
+def first_line(db, business):
+    return queue.get_lines(db, business["id"])[0]["id"]

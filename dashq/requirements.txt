@@ -1,6 +1,5 @@
-flask
-flask-wtf
-gunicorn
+nicegui
+werkzeug
 pandas
 numpy
 matplotlib
@@ -9,3 +8,4 @@ qrcode[pil]
 pillow
 tzdata
 pytest
+pytest-asyncio

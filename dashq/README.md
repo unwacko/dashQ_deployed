@@ -23,12 +23,22 @@ You need Python 3.12.
 cd dashq
 python3.12 -m venv .venv
 .venv/bin/pip install -r requirements.txt
-.venv/bin/flask --app app:create_app seed-demo          # the two sample businesses (only once)
-.venv/bin/flask --app app:create_app run --debug --port 5050
+.venv/bin/python main.py
 ```
+
+The two sample businesses are created the first time it starts.
 
 | Page | Address |
 |---|---|
+| Home page | http://localhost:5050 |
+| Sign up / log in | http://localhost:5050/app/signup · /app/login |
+| Sample businesses | click them on the log-in page (password `demo-pass-2026`) |
+| Encave's customer page | http://localhost:5050/b/encave-cafe |
+| NFC link (same page, marked NFC) | http://localhost:5050/b/encave-cafe?via=nfc |
+
+Tests: `.venv/bin/python -m pytest -q`
+
+---|---|
 | Landing page | http://localhost:5050 |
 | Sign up / log in | http://localhost:5050/app/signup · /app/login |
 | Sample businesses | click them on the log-in page (password `demo-pass-2026`) |
@@ -52,10 +62,10 @@ Then the **ticket**: token, people ahead, wait estimate, and the line they're in
 ("Preparing", "Ready to collect"…). The business picks **when** the token is handed out:
 right away, after page 1, after page 2, or at the end. Pages after that still save onto the ticket.
 
-Progress is kept in the session **cookie**, so if the customer closes the tab by mistake, opening
+Progress is kept in NiceGUI's browser storage (a signed **cookie**), so if the customer closes the tab by mistake, opening
 the link again takes them back to where they were.
 
-When staff call them, the page **beeps** (a WAV made in Python, `services/sound.py`), **vibrates**,
+When staff call them, the page **beeps** (a WAV made in Python, `services/sound.py`)
 and **flashes red** until they're served. The customer can press **Stop alert**; the staff card then shows
 **Resend alert** to turn it back on.
 
@@ -73,60 +83,54 @@ and **flashes red** until they're served. The customer can press **Stop alert**;
 
 ## 3. How it's built
 
-Python does the work. Libraries do the hard browser parts, so we don't write them ourselves.
+**Everything is Python.** There are no HTML, CSS or JavaScript files. NiceGUI turns Python code
+(`ui.button(...)`, `ui.label(...)`) into the web page and sends clicks back to our Python functions.
 
 | Part | Tool | Why |
 |---|---|---|
-| Web pages | Flask + Jinja templates | simple to read and explain |
-| Live updates | **htmx** (`hx-get`, `hx-trigger="every 3s"`) | refreshes part of a page with HTML from Flask, no custom JavaScript |
-| Only change what changed | **idiomorph** (`hx-swap="morph:innerHTML"`) | the board doesn't flicker |
-| Smooth animations | **auto-animate** | someone joins/leaves/moves → it slides by itself |
-| Drag and drop | **SortableJS** | drag cards between lines |
-| Charts | matplotlib + seaborn → SVG | what the team was taught |
+| Pages | **NiceGUI** (`@ui.page`, `ui.*` elements) | the whole interface in Python |
+| Styling | `.classes("...")` and `.props("...")` in Python | ready-made style words, no CSS file |
+| Live updates | `ui.timer(3, ...)` + `@ui.refreshable` | redraws the board only when the data changed |
+| Drag and drop | `.on("dragstart")` / `.on("drop")` handled in Python | move or reorder cards |
+| Charts | matplotlib + seaborn → SVG, shown with `ui.image` | what the team was taught |
 | Data | SQLite (`sqlite3`), pandas | plain SQL strings, no ORM |
 | QR codes | `qrcode` | |
 | Pictures | Pillow | checks and re-saves every upload |
-
-The four libraries load from `cdn.jsdelivr.net` with fixed versions (see `templates/base.html`).
-Our own JavaScript is tiny: `board.js` (sets up the two libraries), `ticket.js` (beep + red flash),
-`stepper.js` (− / + buttons), `reveal.js` (landing page fade-in).
+| Alarm sound | `wave` + `math` (standard library) | a beep made by Python |
 
 ```
 dashq/
-├── app.py              create_app(), security headers, error pages, `seed-demo` command
-├── auth.py             sign up, log in, demo log in, login_required
-├── db.py / schema.sql  SQLite connection and tables
-├── sections/           routes only (thin)
-│   ├── landing.py      /  and the alarm sound
-│   ├── customer.py     /b/<slug>/...  the 3 pages + ticket
-│   └── dashboard.py    /app/...  board, settings, analytics
-├── services/           the real logic, no Flask, easy to test
+├── main.py             start here: python main.py
+├── config.py, db.py    settings, tables and the database connection
+├── views/              the pages (Python): landing, auth_pages, customer,
+│                       board, settings_page, analytics_page, dashboard_frame, common
+├── services/           the logic, no web code, easy to test
 │   ├── accounts.py     businesses and settings
-│   ├── queue.py        lines and tickets: call, done, move, board()
+│   ├── queue.py        lines and tickets: call, done, move, stop/resend alert, board()
+│   ├── join_flow.py    the customer's pages and when the token is given
 │   ├── pages.py        the list (menu) and extras (links/pictures/text)
 │   ├── analytics.py    tickets → pandas DataFrames
 │   ├── charts.py       one short function per chart
 │   ├── sample_data.py  Encave, Sociovate and 30 days of history
 │   ├── sound.py        the beep, written with the `wave` module
 │   └── qr.py
-├── templates/  static/  tests/
+├── static/             logo, favicon, chart font
+└── tests/
 ```
 
 ### The idea behind the live board, in one paragraph
-`board.html` has a `<div id="live" hx-get="/app/live" hx-trigger="every 3s" hx-swap="morph:innerHTML">`.
-Every 3 seconds htmx asks Flask for `/app/live`, which renders `_live.html` with the latest tickets.
-idiomorph compares the new HTML with the page and only changes what's different. auto-animate notices
-a card was added, removed or moved and animates it. The buttons work the same way: `hx-post="/app/ticket/5/done"`
-does the work in Python and sends back the fresh board.
+`board.py` draws the columns inside a `@ui.refreshable` function. A `ui.timer(3, check_for_changes)` reads a
+short summary of the tickets every 3 seconds and calls `lanes.refresh()` only when it changed. Buttons call
+Python functions directly, for example `on_click=lambda: done(ticket_id)`, which update the database and redraw.
 
 ---
 
 ## 4. Security notes
 - Passwords are hashed (`werkzeug`); 5 wrong tries lock the account for 10 minutes.
-- CSRF on every form and every htmx request (the token is sent as a header from `base.html`).
+- Clicks travel over NiceGUI's live connection for that page, so there are no forms another site could submit.
 - Every query filters by `business_id`; `tests/test_board.py` checks one business can't touch another.
 - Uploads: JPEG/PNG/WebP only, 4 MB cap, re-saved by Pillow with a random name.
 - Links on page 3 must start with `https://`, `http://` or `upi://`.
 - The sample accounts can be opened without a password (they're public demos) but can't be deleted.
 
-The previous version (with superadmin, rooms, calls) is saved in `../_archive/dashq_v2_before_redesign/`.
+Older versions are saved in `../_archive/` (v2 with superadmin; v3 built with Flask and HTML templates).

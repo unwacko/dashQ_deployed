@@ -68,7 +68,7 @@ az webapp create --name $NAME --resource-group $GROUP --plan dashq-plan --runtim
 ## Step 5. Tell Azure how to start the app
 
 ```bash
-az webapp config set --name $NAME --resource-group $GROUP --startup-file 'flask --app app:create_app seed-demo; gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 "app:create_app()"'
+az webapp config set --name $NAME --resource-group $GROUP --startup-file 'python main.py' --web-sockets-enabled true
 ```
 
 ```bash
@@ -88,7 +88,7 @@ az webapp config appsettings set --name $NAME --resource-group $GROUP --output n
 This zips only the app. It leaves out `.venv`, the tests and your local `data/` folder (your test accounts):
 
 ```bash
-rm -f ../dashq-deploy.zip && zip -r -q ../dashq-deploy.zip app.py config.py db.py auth.py schema.sql requirements.txt README.md sections services templates static -x "*/__pycache__/*" "*.pyc" "*.DS_Store"
+rm -f ../dashq-deploy.zip && zip -r -q ../dashq-deploy.zip main.py config.py db.py requirements.txt README.md views services static -x "*/__pycache__/*" "*.pyc" "*.DS_Store"
 ```
 
 ## Step 8. Upload it
@@ -110,7 +110,7 @@ The first visit can take up to a minute while the free plan wakes up. Then check
 1. The landing page loads, with the dashQ look and the Inter font.
 2. **Sign up** a test business. You land on the live board. Your customer page is `https://<name>.azurewebsites.net/b/<your-slug>`.
 3. Open the customer page on your phone and join the line.
-4. The two sample businesses (Encave, Sociovate) are made on start by `seed-demo` in the startup command. It skips them if they already exist.
+4. The two sample businesses (Encave, Sociovate) are made when the app starts. It skips them if they already exist.
 
 ## If something goes wrong
 
@@ -141,4 +141,5 @@ az webapp log tail --name $NAME --resource-group $GROUP
   `az webapp config set --name $NAME --resource-group $GROUP --always-on true`.
 - **Budget alert:** in the Azure portal, open Cost Management → Budgets and add alerts at $30 and $70.
 - **Backups:** open `https://<name>.scm.azurewebsites.net`, then Debug console → Bash, go to `/home/data`, and download `dashq.db`.
-- **Never** turn on scale-out (more than one instance). SQLite only works on one server.
+- **Never** turn on scale-out (more than one instance). SQLite and NiceGUI both need one server.
+- The free F1 plan allows only a few live connections (WebSockets) at once. Fine for a demo; use B1 for real use.
