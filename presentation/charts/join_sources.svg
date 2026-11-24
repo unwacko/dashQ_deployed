@@ -1,0 +1,90 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 243.188893 184.608" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-24T21:41:14.241758</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 184.608 
+L 243.188893 184.608 
+L 243.188893 0 
+L 0 0 
+L 0 184.608 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="patch_2">
+    <path d="M 132.820631 11.664 
+C 111.866452 11.664 91.715831 19.831366 76.674954 34.420732 
+C 61.634076 49.010099 52.856528 68.90251 52.218069 89.84696 
+C 51.57961 110.791409 59.129209 131.181528 73.253516 146.65995 
+C 87.377824 162.138371 106.993554 171.517952 127.908826 172.794277 
+L 129.971784 138.988362 
+C 117.840926 138.248094 106.463803 132.807937 98.271704 123.830452 
+C 90.079606 114.852968 85.700839 103.026699 86.071145 90.878918 
+C 86.441451 78.731137 91.532429 67.193538 100.256138 58.731706 
+C 108.979847 50.269873 120.667207 45.532801 132.820631 45.532801 
+z
+" style="fill: #1f48ff; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 127.908826 172.794277 
+C 138.947918 173.467922 150.008486 171.863434 160.401136 168.080819 
+C 170.793787 164.298203 180.298018 158.417717 188.321443 150.805883 
+C 196.344868 143.194049 202.717252 134.012369 207.041413 123.833125 
+C 211.365574 113.653882 213.549765 102.69305 213.457849 91.633804 
+L 179.590217 91.915288 
+C 179.643529 98.32965 178.376698 104.686933 175.868685 110.590894 
+C 173.360671 116.494855 169.664688 121.82023 165.011102 126.235093 
+C 160.357515 130.649957 154.845061 134.060639 148.817324 136.254556 
+C 142.789587 138.448473 136.374458 139.379076 129.971784 138.988362 
+z
+" style="fill: #1e1e1e; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 213.457849 91.633804 
+C 213.281132 70.371561 204.701824 50.019036 189.604278 35.046449 
+C 174.506733 20.073863 154.083609 11.664 132.820631 11.664 
+L 132.820631 45.532801 
+C 145.153158 45.532801 156.99857 50.410522 165.755146 59.094622 
+C 174.511723 67.778722 179.487722 79.583187 179.590217 91.915288 
+z
+" style="fill: #d98a3a; stroke: #ffffff; stroke-width: 2; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 10px; font-family: 'Inter'; text-anchor: end; fill: #6b7079" x="44.157813" y="93.238951" transform="rotate(-0 44.157813 93.238951)">QR code</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 10px; font-family: 'Inter'; text-anchor: start; fill: #6b7079" x="193.871524" y="160.293766" transform="rotate(-0 193.871524 160.293766)">NFC tap</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 10px; font-family: 'Inter'; text-anchor: start; fill: #6b7079" x="195.282643" y="32.958389" transform="rotate(-0 195.282643 32.958389)">In person</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 10px; font-family: 'Inter'; text-anchor: middle; fill: #ffffff" x="69.144607" y="94.000634" transform="rotate(-0 69.144607 94.000634)">49%</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 10px; font-family: 'Inter'; text-anchor: middle; fill: #ffffff" x="176.666272" y="142.158183" transform="rotate(-0 176.666272 142.158183)">26%</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 10px; font-family: 'Inter'; text-anchor: middle; fill: #ffffff" x="177.679712" y="50.708231" transform="rotate(-0 177.679712 50.708231)">25%</text>
+   </g>
+  </g>
+ </g>
+</svg>

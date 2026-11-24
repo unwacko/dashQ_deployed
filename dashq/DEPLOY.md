@@ -68,7 +68,7 @@ az webapp create --name $NAME --resource-group $GROUP --plan dashq-plan --runtim
 ## Step 5. Tell Azure how to start the app
 
 ```bash
-az webapp config set --name $NAME --resource-group $GROUP --startup-file 'gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 "app:create_app()"'
+az webapp config set --name $NAME --resource-group $GROUP --startup-file 'flask --app app:create_app seed-demo; gunicorn --bind 0.0.0.0:8000 --workers 2 --timeout 120 "app:create_app()"'
 ```
 
 ```bash
@@ -80,7 +80,7 @@ az webapp update --name $NAME --resource-group $GROUP --https-only true
 The `SECRET_KEY` is made randomly inside this command and never printed:
 
 ```bash
-az webapp config appsettings set --name $NAME --resource-group $GROUP --output none --settings SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')" DATA_DIR=/home/data DASHQ_TZ=Asia/Kolkata SCM_DO_BUILD_DURING_DEPLOYMENT=true
+az webapp config appsettings set --name $NAME --resource-group $GROUP --output none --settings SECRET_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')" DATA_DIR=/home/data/dashq-v3 DASHQ_TZ=Asia/Kolkata SCM_DO_BUILD_DURING_DEPLOYMENT=true
 ```
 
 ## Step 7. Make the upload package
@@ -110,7 +110,7 @@ The first visit can take up to a minute while the free plan wakes up. Then check
 1. The landing page loads, with the dashQ look and the Inter font.
 2. **Sign up** a test business. You land on the live board. Your customer page is `https://<name>.azurewebsites.net/b/<your-slug>`.
 3. Open the customer page on your phone and join the line.
-4. Optional: make the two sample businesses in the Kudu SSH console with `flask --app app:create_app seed-demo`.
+4. The two sample businesses (Encave, Sociovate) are made on start by `seed-demo` in the startup command. It skips them if they already exist.
 
 ## If something goes wrong
 
@@ -132,6 +132,8 @@ az webapp log tail --name $NAME --resource-group $GROUP
 | Very slow first load | Normal on the free F1 plan. It sleeps when nobody uses it |
 
 ## Later
+
+- **Change settings only after an upload has finished.** Changing a setting restarts the site with whatever code is there at that moment.
 
 - **Updating the site after changing code:** run Step 1, the `NAME=` and `GROUP=` lines from Step 3, then Steps 7 and 8.
 - **Before a demo or real users:** move to B1 (about $13/month) and turn on Always On:

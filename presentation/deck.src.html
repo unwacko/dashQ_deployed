@@ -1,0 +1,625 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>dashQ Presentation</title>
+<style>
+@font-face{font-family:Inter;src:url(fonts/Inter-Regular.ttf);font-weight:400}
+@font-face{font-family:Inter;src:url(fonts/Inter-Medium.ttf);font-weight:500 900}
+:root{--blue:#1f48ff;--dark:#1e1e1e;--light:#c2dcff;--pale:#eef4ff;--bg:#f8faff;
+--pink:#e0449c;--green:#14a86f;--amber:#f29b11;--violet:#7048e8;--red:#ef3b3b;--teal:#0ea5b7;--muted:#5b6070}
+@page{size:960px 540px;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,Helvetica,Arial,sans-serif;color:var(--dark);background:#ccc}
+.slide{width:960px;height:540px;position:relative;overflow:hidden;background:var(--bg);padding:36px 43px;page-break-after:always;break-after:page}
+.tag{position:absolute;top:28px;right:38px;font:500 12px/1 "Menlo",monospace;color:var(--dark);display:flex;align-items:center;gap:8px}
+.tag img{height:22px;border-radius:4px}
+.pg{position:absolute;bottom:18px;right:38px;font:12px Menlo,monospace;color:#9aa0ae}
+h1{font-size:38px;font-weight:800;letter-spacing:-.5px;text-transform:uppercase;line-height:1.05;margin-bottom:6px}
+.sub{font-size:15px;color:var(--muted);margin-bottom:16px}
+.mono{font:500 11px Menlo,monospace;letter-spacing:.5px;text-transform:uppercase;color:#7a7f8c}
+.c-blue{color:var(--blue)}.c-pink{color:var(--pink)}.c-green{color:var(--green)}.c-amber{color:var(--amber)}.c-violet{color:var(--violet)}.c-red{color:var(--red)}.c-teal{color:var(--teal)}
+.row{display:flex;gap:18px}.col{display:flex;flex-direction:column;gap:10px}
+.card{background:#fff;border:1px solid #e3e8f4;border-radius:12px;padding:13px 15px;box-shadow:0 2px 6px rgba(31,72,255,.06)}
+.card h3{font-size:15px;font-weight:800;margin-bottom:4px}
+.card p,.card li{font-size:12.5px;line-height:1.42;color:#3a3d47}
+p.body{font-size:14px;line-height:1.5;color:#33363f}
+ul.b{list-style:none}ul.b li{position:relative;padding-left:16px;font-size:13.5px;line-height:1.45;margin-bottom:5px;color:#2b2e36}
+ul.b li:before{content:"";position:absolute;left:2px;top:7px;width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.5}
+ul.b.sm li{font-size:12.5px;margin-bottom:3px}
+b{font-weight:700}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;color:#fff}
+.code{font:11.5px/1.45 Menlo,monospace;background:#1e1e1e;color:#e6e9f5;border-radius:10px;padding:10px 12px;white-space:pre}
+.code .k{color:#7fa2ff}.code .s{color:#9fe0b4}.code .c{color:#8a8f9c}
+/* flowchart */
+.fl{display:flex;flex-direction:column;align-items:center;gap:0}
+.nd{border:1.6px solid var(--a);background:var(--ab);border-radius:8px;padding:7px 10px;font-size:11.5px;text-align:center;width:210px;line-height:1.3}
+.nd.term{background:var(--a);color:#fff;font-weight:700;border-radius:99px}
+.nd.dia{clip-path:polygon(8% 0,92% 0,100% 50%,92% 100%,8% 100%,0 50%);font-weight:700;border:none;background:var(--ab2);padding:9px 18px}
+.ar{width:2px;height:13px;background:var(--a);position:relative;margin-bottom:5px}
+.ar:after{content:"";position:absolute;left:-4px;bottom:-5px;border:5px solid transparent;border-top:6px solid var(--a);border-bottom:0}
+.side{display:flex;align-items:center;gap:0}
+.side .hz{width:30px;height:2px;background:var(--a);position:relative}
+.side .hz:after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left:6px solid var(--a);border-right:0}
+.yn{font-size:10px;font-weight:700;color:#7a7f8c}
+.num{width:34px;height:34px;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+table.t{border-collapse:separate;border-spacing:0;width:100%;font-size:12px;background:#fff;border-radius:10px;overflow:hidden;border:1px solid #e3e8f4}
+table.t th{background:var(--dark);color:#fff;text-align:left;padding:7px 10px;font-size:11.5px}
+table.t td{padding:6px 10px;border-top:1px solid #eef0f6;vertical-align:top;line-height:1.35}
+table.t tr:nth-child(even) td{background:#f7f9ff}
+.chart{background:#fff;border:1px solid #e3e8f4;border-radius:10px;padding:6px 8px}
+.chart{height:196px;display:flex;flex-direction:column}.chart svg{width:100%;flex:1;min-height:0;display:block}
+.chart .ct{font-size:11px;font-weight:700;margin-bottom:2px}
+.phone{width:150px;height:300px;border:7px solid var(--dark);border-radius:24px;background:#fff;position:relative;overflow:hidden;flex:none;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.phone .scr{padding:16px 10px 8px;font-size:10px}
+.phone .hd{font-weight:800;font-size:11px;margin-bottom:6px}
+.inp{border:1px solid #d6dbea;border-radius:6px;padding:5px 6px;margin-bottom:5px;color:#8a8f9c;font-size:9px}
+.btn{background:var(--blue);color:#fff;border-radius:6px;padding:6px;text-align:center;font-weight:700;font-size:9.5px;margin-top:6px}
+.qrow{display:flex;justify-content:space-between;align-items:center;border:1px solid #e3e8f4;border-radius:6px;padding:4px 6px;margin-bottom:4px;font-size:9px}
+.grid-bg{background-image:linear-gradient(#dfe3ea 1px,transparent 1px),linear-gradient(90deg,#dfe3ea 1px,transparent 1px);background-size:32px 32px}
+.stat{font-size:44px;font-weight:900;letter-spacing:-1px;line-height:1}
+.layer{border-radius:10px;padding:9px 12px;color:#fff}
+.layer b{font-size:13px}.layer span{font-size:11px;opacity:.9;display:block;margin-top:2px}
+.qcard{background:#fff;border:1px solid #e3e8f4;border-left:4px solid var(--blue);border-radius:7px;padding:6px 8px;margin-bottom:6px;font-size:10.5px}
+.qcard .tk{font-weight:800;font-size:14px;margin-right:6px}
+.chip{display:inline-block;font-size:9px;font-weight:700;border-radius:4px;padding:1px 5px;margin-left:4px}
+</style></head><body>
+
+<!-- 1 TITLE -->
+<section class="slide grid-bg" style="background-color:#f2f4f8;padding:0">
+  <div style="position:absolute;left:43px;top:40px;width:420px">
+    <div class="mono" style="color:#333;font-size:13px">Python Group Mini-Project</div>
+    <div style="font:800 30px/1.2 Menlo,monospace;margin-top:22px;letter-spacing:1px">MAKING IN-PERSON<br>LINES BETTER:</div>
+    <img src="img/logo.png" style="width:230px;margin:12px 0 0 0;border-radius:14px;box-shadow:0 6px 18px rgba(31,72,255,.18)">
+    <div style="font-size:15px;margin-top:10px;color:#33363f">Join the queue from your phone:<br><b class="c-blue">QR · NFC · in person</b></div>
+    <div style="font:12.5px/1.65 Menlo,monospace;margin-top:14px;color:#333">AAYUSHI UMBARE<br>IRA BANDEKAR<br>KHADIJA GODME<br>PIYUSH PITRE</div>
+  </div>
+  <img src="img/sketch.png" style="position:absolute;left:601px;top:22px;width:259px">
+  <img src="img/crowd.png" style="position:absolute;left:443px;top:203px;width:475px">
+  <img src="img/stripe.png" style="position:absolute;left:0;bottom:0;width:960px">
+</section>
+
+<!-- 2 PROBLEM STATEMENT -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-pink">Problem Statement</h1>
+  <div class="row" style="margin-top:14px">
+    <div style="width:430px">
+      <p style="font-size:18px;font-weight:800;line-height:1.3">Online, everything is seamless: food, cabs and bills take a few taps. But the moment we walk into a clinic, bank, canteen or government office in India, we are back to standing in a crowd.</p>
+      <p class="body" style="margin-top:12px">Nobody knows their place, how long it will take, or whether someone just cut in. Businesses run the line with shouting and paper registers, and get no information out of it.</p>
+      <ul class="b" style="margin-top:14px;color:var(--pink)">
+        <li><span style="color:#2b2e36">You can't leave the line, even for two minutes</span></li>
+        <li><span style="color:#2b2e36">Line-cutting and "I was here first" arguments</span></li>
+        <li><span style="color:#2b2e36">You repeat your name and order to three different people</span></li>
+        <li><span style="color:#2b2e36">Paper tokens get lost, nobody can estimate the wait</span></li>
+        <li><span style="color:#2b2e36">The business looks disorganised and loses walk-aways</span></li>
+      </ul>
+    </div>
+    <div style="flex:1;--a:var(--pink);--ab:#fde7f3;--ab2:#f9cde5">
+      <div class="mono" style="margin-bottom:8px">A typical Indian queue today</div>
+      <div class="fl" style="align-items:flex-start">
+        <div class="nd term">Arrive at the counter</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd">Shout your name / take a paper slip</div><div class="ar" style="margin-left:104px"></div>
+        <div class="side"><div class="nd dia">Need to step away?</div><div class="yn" style="margin:0 4px">Yes</div><div class="hz"></div><div class="nd" style="width:150px;margin-left:6px;background:#fff">Lose your place or miss your turn</div></div>
+        <div class="yn" style="margin-left:96px">No</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd">Stand and wait, no idea how long</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd">Crowd, cutting, disputes</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd term">Finally served</div>
+      </div>
+    </div>
+  </div><div class="pg">02</div>
+</section>
+
+<!-- 3 PROBLEM IDENTIFICATION -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-green">Problem Identification</h1>
+  <div class="row" style="margin-top:12px">
+    <div style="width:460px">
+      <h3 class="c-green" style="font-size:17px;margin-bottom:8px">Where we see it every day</h3>
+      <p class="body"><b>Hospitals &amp; clinics:</b> OPD tokens, test and pharmacy queues<br>
+      <b>Cafés &amp; canteens:</b> lunch-hour rush at the counter<br>
+      <b>Banks, RTO, ration shops:</b> service counters and token lines<br>
+      <b>College offices:</b> fee payment and admission days<br>
+      <b>Salons &amp; repair shops:</b> "who came first?"</p>
+      <h3 class="c-green" style="font-size:17px;margin:18px 0 8px">Two sides of the same problem</h3>
+      <div class="row" style="gap:10px">
+        <div class="card" style="flex:1;border-top:4px solid var(--blue)"><h3 class="c-blue">Customers</h3><p>Wasted time standing, no visibility, unfair order, no way to step away.</p></div>
+        <div class="card" style="flex:1;border-top:4px solid var(--amber)"><h3 class="c-amber">Businesses</h3><p>Look unprofessional, staff busy managing crowds, zero data on peak hours or popular items.</p></div>
+      </div>
+    </div>
+    <div style="flex:1">
+      <div class="row" style="gap:12px">
+        <div class="card" style="flex:1"><div class="stat c-green">36%</div><p style="margin-top:6px">of India's population already lives in cities</p></div>
+        <div class="card" style="flex:1"><div class="stat c-green">600M</div><p style="margin-top:6px">people expected in Indian cities by 2036 (World Bank)</p></div>
+      </div>
+      <img src="img/city.png" style="width:300px;margin:14px 0 0 40px">
+    </div>
+  </div><div class="pg">03</div>
+</section>
+
+<!-- 4 EXISTING SOLUTIONS -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-violet">Existing Solutions &amp; Their Gaps</h1>
+  <div class="sub">Lots of things try to fix queues. None of them fit a small Indian shop or clinic.</div>
+  <table class="t">
+    <tr><th style="width:170px">Solution</th><th style="width:200px">Where you see it</th><th>Why it falls short</th></tr>
+    <tr><td><b>Paper token / register</b></td><td>Clinics, govt offices</td><td>Easy to lose, no live updates, no data, you still have to stand nearby</td></tr>
+    <tr><td><b>Token display machines</b></td><td>Banks, Aadhaar centres</td><td>₹20k–1L+ of hardware, one queue only, you must stay in the room</td></tr>
+    <tr><td><b>Buzzers / pagers</b></td><td>Malls, food courts</td><td>Expensive, get lost or broken, short range, shared and unhygienic</td></tr>
+    <tr><td><b>Enterprise queue software</b></td><td>Qmatic, Qless, Waitwhile</td><td>Priced in USD, often needs an app download, too complex for a small shop</td></tr>
+    <tr><td><b>Booking apps</b></td><td>Practo, table bookings</td><td>Only for <i>scheduled</i> visits, not walk-ins; the platform owns the customer</td></tr>
+    <tr><td><b>Calling names / WhatsApp</b></td><td>Small shops</td><td>Doesn't scale, no ordering, no analytics, chaotic</td></tr>
+  </table>
+  <div class="card" style="margin-top:14px;background:var(--dark);border:none;color:#fff;display:flex;align-items:center;gap:14px">
+    <span class="pill" style="background:var(--blue);font-size:13px">THE GAP</span>
+    <span style="font-size:15px;font-weight:600">No cheap, no-app, <u>walk-in-first</u> system built for small and medium Indian businesses.</span>
+  </div><div class="pg">04</div>
+</section>
+
+<!-- 5 OBJECTIVES -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-blue">Objectives</h1>
+  <div class="row" style="margin-top:10px">
+    <div class="col" style="width:540px;gap:13px">
+      <div class="row" style="gap:14px;align-items:center"><div class="num" style="background:var(--blue)">1</div><div><b>Go virtual, no app</b><br><span style="font-size:13px;color:#3a3d47">Join from any phone browser by QR, NFC tap or at the counter</span></div></div>
+      <div class="row" style="gap:14px;align-items:center"><div class="num" style="background:var(--pink)">2</div><div><b>Show the wait</b><br><span style="font-size:13px;color:#3a3d47">Live token, people ahead and a realistic wait estimate</span></div></div>
+      <div class="row" style="gap:14px;align-items:center"><div class="num" style="background:var(--green)">3</div><div><b>Free people to step away</b><br><span style="font-size:13px;color:#3a3d47">The phone beeps, vibrates and flashes red when it's your turn</span></div></div>
+      <div class="row" style="gap:14px;align-items:center"><div class="num" style="background:var(--amber)">4</div><div><b>Order while you wait</b><br><span style="font-size:13px;color:#3a3d47">Pick from a menu or list of services, straight to the business</span></div></div>
+      <div class="row" style="gap:14px;align-items:center"><div class="num" style="background:var(--violet)">5</div><div><b>Make the business look professional</b><br><span style="font-size:13px;color:#3a3d47">A live board to call, move, reorder and complete customers</span></div></div>
+      <div class="row" style="gap:14px;align-items:center"><div class="num" style="background:var(--teal)">6</div><div><b>Learn from data</b><br><span style="font-size:13px;color:#3a3d47">Charts for busy hours, wait times and best-selling items</span></div></div>
+    </div>
+    <img src="img/circle.png" style="width:280px;height:278px;margin:24px 0 0 20px">
+  </div><div class="pg">05</div>
+</section>
+
+<!-- 6 PROPOSED SOLUTION: TRIPLE SERVICING -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-blue">Proposed Solution</h1>
+  <div class="sub"><b style="color:var(--dark)">dashQ turns a physical line into a virtual one.</b> Customers join in one of three ways (<i>triple servicing</i>), so nobody is left out.</div>
+  <div class="row" style="gap:16px">
+    <div class="card" style="flex:1;border-top:5px solid var(--blue)">
+      <div style="font-size:30px">▦</div><h3 class="c-blue">QR code</h3>
+      <p>Printed at the counter. Any phone camera opens <code>/b/encave-cafe?via=qr</code>. Works on every smartphone.</p></div>
+    <div class="card" style="flex:1;border-top:5px solid var(--pink)">
+      <div style="font-size:30px">📶</div><h3 class="c-pink">NFC sticker</h3>
+      <p>A ₹10 NTAG sticker stores our link. Tap the phone and you're in, no camera needed. The "wow" moment.</p></div>
+    <div class="card" style="flex:1;border-top:5px solid var(--amber)">
+      <div style="font-size:30px">🧍</div><h3 class="c-amber">In person (IP)</h3>
+      <p>For elderly people or anyone without a smartphone: staff add them to the line from the dashboard.</p></div>
+  </div>
+  <div class="row" style="margin-top:16px;gap:16px;align-items:stretch">
+    <div class="card" style="flex:1.3;background:var(--light);border:none">
+      <h3>What happens next</h3>
+      <p style="font-size:13px">The customer fills up to <b>3 short phone pages</b> (details → menu → links/payment), gets a <b>token</b>, and can sit, wander or step out. The business watches everyone on a <b>live laptop board</b>. When staff press <b>Call</b>, the customer's phone <b style="color:var(--red)">beeps and flashes red</b>.</p></div>
+    <div class="card" style="flex:1;background:var(--dark);border:none;color:#fff">
+      <h3 style="color:#fff">Why three ways?</h3>
+      <p style="color:#d8dcea;font-size:12.5px">Many budget phones have no NFC, some people have no smartphone at all. QR covers almost everyone, NFC is the fast path, IP is the safety net.</p></div>
+  </div><div class="pg">06</div>
+</section>
+
+<!-- 7 CUSTOMER JOURNEY -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-pink">Customer Side: 3 Mobile Pages</h1>
+  <div class="sub">Split into pages only to keep it phone-friendly. The business can switch each page on or off and choose <b>when</b> the token is given.</div>
+  <div class="row" style="gap:22px;align-items:flex-start">
+    <div style="text-align:center"><div class="phone"><div class="scr"><div class="mono" style="font-size:8px">Encave Cafe · Step 1</div><div class="hd">Your details</div><div class="inp">Name</div><div class="inp">Phone (optional)</div><div class="inp">Email (off)</div><div class="btn">Next</div></div></div><div style="font-size:12px;font-weight:700;margin-top:8px" class="c-blue">1 · Details</div></div>
+    <div style="text-align:center"><div class="phone"><div class="scr"><div class="mono" style="font-size:8px">Step 2</div><div class="hd">Pick from the menu</div><div class="qrow">Cheese maggi<b>− 1 +</b></div><div class="qrow">Cold coffee<b>− 2 +</b></div><div class="qrow">Veg sandwich<b>− 0 +</b></div><div class="qrow">Masala chai<b>− 0 +</b></div><div class="btn">Next</div></div></div><div style="font-size:12px;font-weight:700;margin-top:8px" class="c-pink">2 · List / menu</div></div>
+    <div style="text-align:center"><div class="phone"><div class="scr"><div class="mono" style="font-size:8px">Step 3</div><div class="hd">Good to know</div><div class="qrow" style="background:var(--pale)">💳 Pay by UPI →</div><div style="height:58px;background:var(--light);border-radius:6px;margin-bottom:5px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#555">today's specials (picture)</div><div style="font-size:9px;color:#555">Free Wi-Fi: encave-guest</div><div class="btn">Get my token</div></div></div><div style="font-size:12px;font-weight:700;margin-top:8px" class="c-green">3 · Links / pics / text</div></div>
+    <div style="text-align:center"><div class="phone" style="border-color:var(--red)"><div class="scr" style="background:var(--red);height:100%;color:#fff;text-align:center;padding-top:40px"><div style="font-size:10px;opacity:.9">YOUR TOKEN</div><div style="font-size:46px;font-weight:900">007</div><div style="font-size:13px;font-weight:800;margin-top:6px">It's your turn!</div><div style="font-size:9px;margin-top:6px">Collect at the counter</div><div style="font-size:18px;margin-top:14px">🔔 📳</div></div></div><div style="font-size:12px;font-weight:700;margin-top:8px" class="c-red">Ticket → your turn</div></div>
+    <div style="flex:1">
+      <ul class="b sm" style="color:var(--pink)">
+        <li><span style="color:#2b2e36"><b>Cookies save progress.</b> Close the tab by mistake, scan again, and you land back on the same step.</span></li>
+        <li><span style="color:#2b2e36"><b>Live ticket</b> shows people ahead and wait estimate, refreshing every 3 s.</span></li>
+        <li><span style="color:#2b2e36"><b>Your turn:</b> beep + vibrate + red flash.</span></li>
+        <li><span style="color:#2b2e36">Moving a card on the board changes the message: "We're making your food."</span></li>
+      </ul>
+    </div>
+  </div><div class="pg">07</div>
+</section>
+
+<!-- 8 BUSINESS DASHBOARD -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-amber">Business Side: The Live Board</h1>
+  <div class="sub">Built for a laptop on the counter. Every line is a column; every customer is a card that updates by itself.</div>
+  <div class="row" style="gap:16px">
+    <div style="width:560px;background:#fff;border:1px solid #e3e8f4;border-radius:12px;padding:10px;box-shadow:0 6px 18px rgba(0,0,0,.06)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px"><img src="img/logo.png" style="height:18px;border-radius:3px"><b style="font-size:12px">Encave Cafe · Live queue</b></div><div style="font-size:11px"><span class="chip" style="background:var(--pale);color:var(--blue)">📊 Analytics</span> <span class="chip" style="background:var(--dark);color:#fff;font-size:12px">⚙ Settings</span></div></div>
+      <div class="row" style="gap:8px">
+        <div style="flex:1;background:#f6f8fc;border-radius:8px;padding:6px"><div style="font-size:11px;font-weight:800;margin-bottom:4px">Ordered · 3</div><div class="btn" style="margin:0 0 6px">Call next</div>
+          <div class="qcard"><span class="tk">001</span>Tanvi<span class="chip" style="background:var(--light);color:var(--blue)">QR</span><div style="color:#888;font-size:9px">joined 12 min ago · Cold coffee ×2</div></div>
+          <div class="qcard" style="border-left-color:var(--pink)"><span class="tk">002</span>Omkar<span class="chip" style="background:#fde7f3;color:var(--pink)">NFC</span><div style="color:#888;font-size:9px">joined 9 min ago · Cheese maggi</div></div>
+          <div class="qcard" style="border-left-color:var(--amber)"><span class="tk">007</span>Sara<span class="chip" style="background:#fff1d6;color:var(--amber)">IP</span><div style="color:#888;font-size:9px">joined 2 min ago</div></div>
+          <div style="font-size:9.5px;color:var(--blue);font-weight:700">+ Add in person</div></div>
+        <div style="flex:1;background:#f6f8fc;border-radius:8px;padding:6px"><div style="font-size:11px;font-weight:800;margin-bottom:4px">Preparing · 1</div><div class="btn" style="margin:0 0 6px">Call next</div>
+          <div class="qcard" style="border:1.5px dashed var(--blue);background:var(--pale)"><span class="tk">004</span>Rahul ↕ <span style="font-size:9px;color:var(--blue)">dragging…</span></div></div>
+        <div style="flex:1;background:#f6f8fc;border-radius:8px;padding:6px"><div style="font-size:11px;font-weight:800;margin-bottom:4px">Ready to collect · 2</div><div class="btn" style="margin:0 0 6px">Call next</div>
+          <div class="qcard" style="border-left-color:var(--red);background:#fdeaea"><span class="tk">006</span>Esha<span class="chip" style="background:var(--red);color:#fff">CALLED</span><div style="font-size:9px"><b style="color:var(--green)">✓ Done</b> · Move ▾ · Remove</div></div>
+          <div class="qcard"><span class="tk">005</span>Yash<span class="chip" style="background:#fde7f3;color:var(--pink)">NFC</span></div></div>
+      </div>
+    </div>
+    <div style="flex:1" class="col">
+      <div class="card" style="border-left:4px solid var(--blue)"><h3 class="c-blue">Call next</h3><p>One click calls the first waiting person and their phone goes red.</p></div>
+      <div class="card" style="border-left:4px solid var(--pink)"><h3 class="c-pink">Drag &amp; drop</h3><p>Reorder cards, or move someone to another line (Ordered → Preparing → Ready).</p></div>
+      <div class="card" style="border-left:4px solid var(--green)"><h3 class="c-green">Done / remove</h3><p>Complete people or take them off the line.</p></div>
+      <div class="card" style="border-left:4px solid var(--amber)"><h3 class="c-amber">Add in person</h3><p>Walk-ins without phones get an <b>IP</b> token.</p></div>
+    </div>
+  </div><div class="pg">08</div>
+</section>
+
+<!-- 9 SETTINGS -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-teal">Settings: The Business Is in Control</h1>
+  <div class="sub">One product, many industries. A clinic, a café and a salon set dashQ up completely differently, with no code.</div>
+  <div class="row" style="gap:16px">
+    <div class="card" style="flex:1;border-top:5px solid var(--teal)"><div class="mono c-teal">Section 1</div><h3>Customer pages &amp; lists</h3>
+      <ul class="b sm" style="color:var(--teal);margin-top:6px"><li><span style="color:#333">Turn each of the 3 pages on/off</span></li><li><span style="color:#333">Name, phone, email: off, optional or required</span></li><li><span style="color:#333">Edit the menu / services list with prices</span></li><li><span style="color:#333">Add links (UPI, Instagram), pictures and text</span></li><li><span style="color:#333">Choose when the token is given: right away, after page 1, page 2, or at the end</span></li></ul></div>
+    <div class="card" style="flex:1;border-top:5px solid var(--violet)"><div class="mono c-violet">Section 2</div><h3>Dashboard lines</h3>
+      <ul class="b sm" style="color:var(--violet);margin-top:6px"><li><span style="color:#333">Add as many lines as you need</span></li><li><span style="color:#333">e.g. <b>Ordering → Waiting for food → Delivery agents</b></span></li><li><span style="color:#333">Each line has its own message for the customer ("Your food is ready!")</span></li><li><span style="color:#333">Average minutes per customer, used for the wait estimate</span></li></ul></div>
+    <div class="card" style="flex:1;border-top:5px solid var(--pink)"><div class="mono c-pink">Section 3</div><h3>Business settings</h3>
+      <ul class="b sm" style="color:var(--pink);margin-top:6px"><li><span style="color:#333">Business name and type</span></li><li><span style="color:#333">Download the QR code (made in Python with <code>qrcode</code>)</span></li><li><span style="color:#333">Link to write on the NFC sticker</span></li><li><span style="color:#333">Delete account (all data removed by <code>ON DELETE CASCADE</code>)</span></li></ul></div>
+  </div>
+  <div class="row" style="margin-top:14px;gap:12px">
+    <div class="card" style="flex:1;background:var(--light);border:none;font-size:13px"><b>Café (Encave):</b> name only → menu → UPI link · lines Ordered / Preparing / Ready</div>
+    <div class="card" style="flex:1;background:#d9f5ea;border:none;font-size:13px"><b>Clinic (Sociovate):</b> name + phone → choose doctor · lines Waiting room / With doctor</div>
+  </div><div class="pg">09</div>
+</section>
+
+<!-- 10 COOL FEATURES & SHORTFALLS -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-green">What's Cool &amp; What's Not (Yet)</h1>
+  <div class="row" style="gap:18px;margin-top:10px">
+    <div style="flex:1">
+      <div class="mono c-green" style="margin-bottom:8px">Highlights</div>
+      <div class="col" style="gap:7px">
+        <div class="card" style="padding:9px 12px"><b class="c-pink">NFC tap-to-join:</b> <span style="font-size:12.5px">a ₹10 sticker replaces a token machine</span></div>
+        <div class="card" style="padding:9px 12px"><b class="c-red">Your phone is the buzzer:</b> <span style="font-size:12.5px">beep, vibrate, red flash</span></div>
+        <div class="card" style="padding:9px 12px"><b class="c-blue">No app to install:</b> <span style="font-size:12.5px">just a web page, ideal for India</span></div>
+        <div class="card" style="padding:9px 12px"><b class="c-amber">Queue + menu + payment</b> <span style="font-size:12.5px">in one flow</span></div>
+        <div class="card" style="padding:9px 12px"><b class="c-violet">Python-made beep:</b> <span style="font-size:12.5px">a sine wave written as a WAV file</span></div>
+        <div class="card" style="padding:9px 12px"><b class="c-teal">Small-shop analytics</b> <span style="font-size:12.5px">usually only big chains get</span></div>
+      </div>
+    </div>
+    <div style="flex:1.35">
+      <div class="mono c-red" style="margin-bottom:8px">Honest shortfalls → how we handle them</div>
+      <table class="t" style="font-size:11.5px">
+        <tr><th>Limitation</th><th>Mitigation</th></tr>
+        <tr><td>Many budget phones have <b>no NFC</b>; older iPhones can't read it in the background</td><td>QR and in-person exist for exactly this. NFC is a bonus.</td></tr>
+        <tr><td>No smartphone or data</td><td>Staff add them as <b>IP</b></td></tr>
+        <tr><td>Sound blocked on silent / locked phones</td><td>"Tap to turn on alerts" button, vibration, red screen; SMS later</td></tr>
+        <tr><td>Cookies cleared / incognito</td><td>Token shown on screen to note down</td></tr>
+        <tr><td>Internet drops</td><td>Fall back to calling tokens aloud</td></tr>
+        <tr><td>Fake / spam joins</td><td>Staff can remove; rate limits</td></tr>
+      </table>
+    </div>
+  </div><div class="pg">10</div>
+</section>
+
+<!-- 11 USE CASES -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-violet">Use Cases</h1>
+  <div class="sub">Anywhere people wait in person, dashQ fits. Lines and pages adapt to each business.</div>
+  <div class="row" style="gap:12px;flex-wrap:wrap">
+    <div class="card" style="width:282px;border-top:5px solid var(--red)"><h3>🏥 Healthcare</h3><p>Clinic OPD tokens · pick a doctor · labs: Waiting → Sample taken → Report ready · pharmacy pickup</p></div>
+    <div class="card" style="width:282px;border-top:5px solid var(--amber)"><h3>🍜 Food</h3><p>Cafés, college canteens, food trucks · order from the menu in line · restaurant waitlists · a "Delivery agents" line</p></div>
+    <div class="card" style="width:282px;border-top:5px solid var(--pink)"><h3>💇 Services</h3><p>Salons (pick stylist) · phone and bike repair: Dropped off → Repairing → Ready · laundry and tailors</p></div>
+    <div class="card" style="width:282px;border-top:5px solid var(--blue)"><h3>🏛 Government &amp; banks</h3><p>RTO, post office, ration shops (PDS) · bank counters: deposit / KYC / loan lines</p></div>
+    <div class="card" style="width:282px;border-top:5px solid var(--green)"><h3>🎓 Campus</h3><p>Fee counters, admission days, placement interviews, hackathon check-in, parent-teacher meetings</p></div>
+    <div class="card" style="width:282px;border-top:5px solid var(--violet)"><h3>🎪 Retail &amp; events</h3><p>Trial rooms, help desks, fest stalls, concert merch, temple prasad counters, vaccination camps</p></div>
+  </div>
+  <div class="card" style="margin-top:12px;background:var(--dark);color:#fff;border:none;font-size:13.5px"><b style="color:var(--light)">For every business:</b> more professional · real queue management · fewer walk-aways · data for staffing and stock · space to show offers and payment links</div>
+  <div class="pg">11</div>
+</section>
+
+<!-- 12 SECTION DIVIDER -->
+<section class="slide" style="background:var(--blue);color:#fff;display:flex;flex-direction:column;justify-content:center">
+  <div class="mono" style="color:var(--light);font-size:13px">Part 2</div>
+  <div style="font-size:56px;font-weight:900;letter-spacing:-1px;margin-top:6px">How we built it</div>
+  <div style="font-size:18px;margin-top:12px;max-width:620px;color:#e3eaff">"Python does all the logic. Ready-made libraries handle the hard browser parts, so we didn't hand-write complex JavaScript."</div>
+  <div style="position:absolute;right:70px;top:140px;width:250px;height:250px;background:#fff;border-radius:28px;display:flex;align-items:center;justify-content:center"><img src="img/python.png" style="width:190px"></div>
+</section>
+
+<!-- 13 TECH STACK: LANGUAGES -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-blue">Technology Stack</h1>
+  <div class="row" style="gap:18px;margin-top:8px">
+    <div style="flex:1">
+      <div class="mono" style="margin-bottom:8px">Languages: how much of each</div>
+      <div class="col" style="gap:7px">
+        <div><div style="display:flex;justify-content:space-between;font-size:13px"><b>Python 3.12</b><span style="color:#666">routes, queue rules, DB, analytics, charts, sound</span></div><div style="height:12px;background:#e8ecf7;border-radius:6px"><div style="width:70%;height:100%;background:var(--blue);border-radius:6px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:13px"><b>HTML + Jinja</b><span style="color:#666">page templates <code>{{ }}</code>, <code>{% for %}</code></span></div><div style="height:12px;background:#e8ecf7;border-radius:6px"><div style="width:42%;height:100%;background:var(--pink);border-radius:6px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:13px"><b>CSS</b><span style="color:#666">one file, all styling + animations</span></div><div style="height:12px;background:#e8ecf7;border-radius:6px"><div style="width:28%;height:100%;background:var(--green);border-radius:6px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:13px"><b>SQL (SQLite)</b><span style="color:#666">plain SQL strings from Python</span></div><div style="height:12px;background:#e8ecf7;border-radius:6px"><div style="width:16%;height:100%;background:var(--amber);border-radius:6px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:13px"><b>JavaScript</b><span style="color:#666">only 4 tiny glue files, 10–40 lines each</span></div><div style="height:12px;background:#e8ecf7;border-radius:6px"><div style="width:7%;height:100%;background:var(--violet);border-radius:6px"></div></div></div>
+      </div>
+      <div class="card" style="margin-top:14px;background:var(--light);border:none"><h3>Why Flask, not Django or React?</h3><p>Flask is small and easy to explain. All our logic stays in Python, and there's no separate frontend app to build.</p></div>
+    </div>
+    <div style="width:330px" class="col">
+      <div class="card" style="border-left:4px solid var(--blue)"><h3 class="c-blue">Flask + Jinja2</h3><p>Web framework: a URL calls a Python function, which returns an HTML page.</p></div>
+      <div class="card" style="border-left:4px solid var(--amber)"><h3 class="c-amber">SQLite</h3><p>One database file. No server to install. Postgres is the next step at scale.</p></div>
+      <div class="card" style="border-left:4px solid var(--green)"><h3 class="c-green">gunicorn on Azure</h3><p>Runs the app on a real server so phones can reach it.</p></div>
+      <div class="card" style="border-left:4px solid var(--pink)"><h3 class="c-pink">No paid APIs</h3><p>No SMS, payment or AI service. Everything runs on our own server.</p></div>
+    </div>
+  </div><div class="pg">13</div>
+</section>
+
+<!-- 14 PYTHON LIBRARIES -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-pink">Python Libraries We Used</h1>
+  <div class="sub">From <code>requirements.txt</code>, plus the standard library (nothing to install).</div>
+  <div class="row" style="gap:9px;flex-wrap:wrap">
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--blue)"><h3 class="c-blue">Flask</h3><p>URLs → Python functions → pages</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--blue)"><h3 class="c-blue">Flask-WTF</h3><p>CSRF protection so other sites can't submit our forms</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--blue)"><h3 class="c-blue">Werkzeug</h3><p>Password hashing: passwords are never stored as text</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--green)"><h3 class="c-green">pandas</h3><p>Tickets table → DataFrame; group, average, pivot</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--green)"><h3 class="c-green">matplotlib</h3><p>Draws every chart and saves it as SVG</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--green)"><h3 class="c-green">seaborn</h3><p>Heatmap, histogram + curve, scatter + trend line</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--green)"><h3 class="c-green">NumPy</h3><p>Random numbers for 30 days of sample data</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--amber)"><h3 class="c-amber">qrcode</h3><p>Generates each business's QR code image</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--amber)"><h3 class="c-amber">Pillow</h3><p>Checks, shrinks and safely re-saves uploaded pictures</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--amber)"><h3 class="c-amber">zoneinfo / tzdata</h3><p>All times shown in Indian time (Asia/Kolkata)</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--violet)"><h3 class="c-violet">pytest</h3><p>17 automatic tests</p></div>
+    <div class="card" style="width:211px;padding:10px 12px;border-top:4px solid var(--violet)"><h3 class="c-violet">gunicorn</h3><p>Runs the app on the server</p></div>
+  </div>
+  <div class="card" style="margin-top:10px;background:var(--dark);border:none;color:#fff;font-size:12.5px"><b style="color:var(--light)">Standard library:</b> <code>sqlite3</code> database · <code>secrets</code> random ticket codes · <code>wave</code> + <code>math</code> + <code>struct</code> make the alarm beep · <code>datetime</code>, <code>re</code>, <code>io</code>, <code>os</code></div>
+  <div class="pg">14</div>
+</section>
+
+<!-- 15 BROWSER LIBRARIES -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-amber">Browser Libraries: Live Without Hard JS</h1>
+  <div class="sub">Four small libraries (from the jsDelivr CDN) do the tricky browser work, so Python stays in charge.</div>
+  <div class="row" style="gap:16px">
+    <div class="col" style="flex:1;gap:9px">
+      <div class="card" style="border-left:5px solid var(--blue)"><h3><span class="c-blue">htmx</span> 2.0.4</h3><p>HTML attributes make part of a page reload itself from Flask every 3 seconds. Buttons send <code>hx-post</code>. <b>Live updates without writing JavaScript.</b></p></div>
+      <div class="card" style="border-left:5px solid var(--pink)"><h3><span class="c-pink">idiomorph</span> 0.7.3</h3><p>When new HTML arrives, it changes <b>only what's different</b>. No flicker, cards keep their place.</p></div>
+      <div class="card" style="border-left:5px solid var(--green)"><h3><span class="c-green">auto-animate</span> 0.8.2</h3><p>One line, <code>autoAnimate(list)</code>: joins slide in, leaves fade out, moves glide.</p></div>
+      <div class="card" style="border-left:5px solid var(--violet)"><h3><span class="c-violet">SortableJS</span> 1.15.6</h3><p>Drag and drop cards to reorder or move them between lines.</p></div>
+    </div>
+    <div style="width:380px">
+      <div class="mono" style="margin-bottom:6px">The whole live board is one HTML attribute</div>
+<div class="code">&lt;div id=<span class="s">"live"</span>
+     <span class="k">hx-get</span>=<span class="s">"/app/live"</span>
+     <span class="k">hx-trigger</span>=<span class="s">"every 3s"</span>
+     <span class="k">hx-swap</span>=<span class="s">"morph:innerHTML"</span>&gt;</div>
+      <div class="mono" style="margin:12px 0 6px">Browser APIs (built in)</div>
+      <div class="row" style="gap:6px;flex-wrap:wrap">
+        <span class="pill" style="background:var(--blue)">Audio: beep</span>
+        <span class="pill" style="background:var(--pink)">navigator.vibrate</span>
+        <span class="pill" style="background:var(--green)">cookies</span>
+        <span class="pill" style="background:var(--amber)">IntersectionObserver</span>
+      </div>
+      <div class="card" style="margin-top:12px;background:var(--light);border:none"><h3>How does NFC work?</h3><p><b>No NFC API needed.</b> The sticker just stores our URL with <code>?via=nfc</code>. The phone opens it like any link, and we record how they joined.</p></div>
+    </div>
+  </div><div class="pg">15</div>
+</section>
+
+<!-- 16 ARCHITECTURE -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-blue">System Architecture</h1>
+  <div class="row" style="gap:20px;margin-top:8px">
+    <div style="width:400px" class="col">
+      <div><b class="c-pink" style="font-size:15px">Two screens, one server</b><p class="body" style="font-size:13px">The customer's phone and the business laptop only talk to our Flask server. Nothing is stored on the phone except a cookie.</p></div>
+      <div><b class="c-blue" style="font-size:15px">sections/ → routes</b><p class="body" style="font-size:13px">Short functions: receive the request, call the logic, send back a page.</p></div>
+      <div><b class="c-green" style="font-size:15px">services/ → logic</b><p class="body" style="font-size:13px">Queue rules, accounts, analytics, charts, QR, sound. <b>No Flask code here</b>, so it's easy to test with pytest.</p></div>
+      <div><b class="c-amber" style="font-size:15px">templates/ + SQLite</b><p class="body" style="font-size:13px">Jinja HTML the user sees, and one database file that survives restarts.</p></div>
+    </div>
+    <div style="flex:1">
+      <div class="row" style="gap:10px">
+        <div class="card" style="flex:1;text-align:center;border:2px solid var(--pink)"><b>📱 Customer phone</b><p>QR / NFC · join pages · ticket</p></div>
+        <div class="card" style="flex:1;text-align:center;border:2px solid var(--pink)"><b>💻 Business laptop</b><p>live board · settings · analytics</p></div>
+      </div>
+      <div style="text-align:center;font-size:18px;color:var(--blue);margin:4px 0">⇅ HTTP (htmx every 3 s)</div>
+      <div style="border:2px dashed var(--blue);border-radius:14px;padding:10px;background:#fff">
+        <div class="mono c-blue" style="margin-bottom:6px">Flask server (Python)</div>
+        <div class="layer" style="background:var(--blue)"><b>sections/*.py: routes</b><span>landing.py · customer.py · dashboard.py</span></div>
+        <div style="text-align:center;color:#999">↓</div>
+        <div class="layer" style="background:var(--green)"><b>services/*.py: logic</b><span>queue · accounts · pages · analytics · charts · sample_data · sound · qr</span></div>
+        <div class="row" style="gap:8px;margin-top:8px">
+          <div class="layer" style="background:var(--violet);flex:1"><b>templates/</b><span>Jinja HTML + dashq.css</span></div>
+          <div class="layer" style="background:var(--amber);flex:1"><b>🗄 SQLite</b><span>dashq.db</span></div>
+        </div>
+      </div>
+    </div>
+  </div><div class="pg">16</div>
+</section>
+
+<!-- 17 DATABASE -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-amber">Database Design</h1>
+  <div class="sub">8 tables in SQLite. Everything belongs to a business.</div>
+  <div class="row" style="gap:18px">
+    <div style="width:560px;position:relative;height:340px"><svg style="position:absolute;left:0;top:0" width="560" height="340"><g stroke="#9aa0ae" stroke-width="2" fill="none">
+<path d="M275 40 V255"/><path d="M190 40 H75 V255"/><path d="M360 40 H475 V255"/><path d="M75 160 H275"/></g></svg>
+      <div class="card" style="position:absolute;left:190px;top:0;width:170px;border:2px solid var(--dark)"><b>BUSINESSES</b><p style="font-family:Menlo;font-size:10.5px">id · name · slug<br>email · password_hash</p></div>
+      <div class="card" style="position:absolute;left:0;top:120px;width:150px;border:2px solid var(--blue)"><b class="c-blue">LINES</b><p style="font-family:Menlo;font-size:10.5px">name · position<br>customer_label</p></div>
+      <div class="card" style="position:absolute;left:190px;top:115px;width:170px;border:2px solid var(--pink)"><b class="c-pink">TICKETS</b><p style="font-family:Menlo;font-size:10.5px">token · code · source<br>status · position<br>joined_at · called_at</p></div>
+      <div class="card" style="position:absolute;left:400px;top:120px;width:150px;border:2px solid var(--green)"><b class="c-green">LIST_ITEMS</b><p style="font-family:Menlo;font-size:10.5px">name · category · price</p></div>
+      <div class="card" style="position:absolute;left:200px;top:255px;width:150px;border:2px solid var(--amber)"><b class="c-amber">TICKET_ITEMS</b><p style="font-family:Menlo;font-size:10.5px">ticket_id · name · qty</p></div>
+      <div class="card" style="position:absolute;left:0;top:255px;width:150px;border:2px solid var(--violet)"><b class="c-violet">EXTRAS</b><p style="font-family:Menlo;font-size:10.5px">kind · title · body</p></div>
+      <div class="card" style="position:absolute;left:400px;top:255px;width:150px;border:2px solid var(--teal)"><b class="c-teal">SETTINGS · PAGE_VIEWS</b></div>
+      
+    </div>
+    <div class="col" style="flex:1;gap:9px">
+      <div class="card" style="border-left:4px solid var(--pink)"><h3>A ticket = one customer</h3><p><code>status</code>: waiting → called → done (or left)<br><code>source</code>: qr, nfc or ip</p></div>
+      <div class="card" style="border-left:4px solid var(--blue)"><h3>Privacy between businesses</h3><p>Every table has <code>business_id</code> and every query filters by it. A test proves business A can't see business B.</p></div>
+      <div class="card" style="border-left:4px solid var(--green)"><h3>Clean deletes</h3><p><code>ON DELETE CASCADE</code>: deleting a business removes all its rows.</p></div>
+      <div class="card" style="border-left:4px solid var(--amber)"><h3>Tokens reset daily</h3><p>001, 002, 003… start again each morning.</p></div>
+    </div>
+  </div><div class="pg">17</div>
+</section>
+
+<!-- 18 WORKFLOW JOIN -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-green">Workflow: A Customer Joins</h1>
+  <div class="row" style="gap:20px;margin-top:6px">
+    <div style="width:390px" class="col">
+      <div><b class="c-green">1. Scan or tap</b><p class="body" style="font-size:13px">Phone opens <code>/b/encave-cafe?via=qr</code> (or <code>nfc</code>). A page view is counted.</p></div>
+      <div><b class="c-green">2. Cookie check</b><p class="body" style="font-size:13px">Flask's signed session cookie remembers progress. Been here before? Go straight back to that page.</p></div>
+      <div><b class="c-green">3. Pages the business turned on</b><p class="body" style="font-size:13px">Details → menu → extras. Any page can be skipped.</p></div>
+      <div><b class="c-green">4. Token at the chosen moment</b><p class="body" style="font-size:13px"><code>issue_ticket_if_due()</code> calls <code>create_ticket()</code> right away, after page 1, page 2, or at the end.</p></div>
+      <div><b class="c-green">5. Live ticket</b><p class="body" style="font-size:13px">People ahead × average minutes = wait estimate. Refreshes every 3 s.</p></div>
+    </div>
+    <div style="flex:1;--a:var(--green);--ab:#e1f6ec;--ab2:#c3ecd8">
+      <div class="fl" style="align-items:flex-start">
+        <div class="nd term">Scan QR / tap NFC</div><div class="ar" style="margin-left:104px"></div>
+        <div class="side"><div class="nd dia">Cookie: already here?</div><div class="yn" style="margin:0 4px">Yes</div><div class="hz"></div><div class="nd" style="width:130px;margin-left:6px;background:#fff">Resume where they left</div></div>
+        <div class="yn" style="margin-left:96px">No</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd">Page 1: name / phone / email</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd">Page 2: pick items + quantity</div><div class="ar" style="margin-left:104px"></div>
+        <div class="side"><div class="nd">Page 3: UPI link, pictures, text</div><div class="hz" style="margin-left:6px"></div><div class="nd" style="width:130px;margin-left:6px;background:#fff">Token can be given at any step</div></div>
+        <div class="ar" style="margin-left:104px"></div>
+        <div class="nd">Ticket: token 007 · 3 ahead · ~12 min</div><div class="ar" style="margin-left:104px"></div>
+        <div class="nd term">Phone checks every 3 s</div>
+      </div>
+    </div>
+  </div><div class="pg">18</div>
+</section>
+
+<!-- 19 LIVE UPDATE + CALL -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-red">Workflow: "Call" → Phone Flashes Red</h1>
+  <div class="row" style="gap:18px;margin-top:8px">
+    <div style="flex:1;--a:var(--red);--ab:#fdeaea;--ab2:#f9cccc">
+      <div class="fl" style="align-items:flex-start">
+        <div class="nd term" style="width:240px">Staff click "Call next"</div><div class="ar" style="margin-left:119px"></div>
+        <div class="nd" style="width:240px"><code>POST /app/line/3/next</code> (htmx)</div><div class="ar" style="margin-left:119px"></div>
+        <div class="nd" style="width:240px"><code>queue.call_next()</code><br>status = 'called', save called_at</div><div class="ar" style="margin-left:119px"></div>
+        <div class="nd" style="width:240px">Board shows the card red + "Calling 007"</div><div class="ar" style="margin-left:119px"></div>
+        <div class="side"><div class="nd dia" style="width:240px">Phone polls: status == called?</div><div class="yn" style="margin:0 4px">No</div><div class="hz"></div><div class="nd" style="width:120px;margin-left:6px;background:#fff">Show place + wait</div></div>
+        <div class="yn" style="margin-left:106px">Yes</div><div class="ar" style="margin-left:119px"></div>
+        <div class="nd term" style="width:240px">🔔 beep · 📳 vibrate · 🟥 red flash</div>
+      </div>
+    </div>
+    <div style="width:370px" class="col">
+      <div class="card" style="border-left:4px solid var(--blue)"><h3 class="c-blue">Live without WebSockets</h3><p>htmx asks <code>/app/live</code> every 3 s; Flask runs a SELECT and returns fresh HTML; idiomorph swaps only what changed; auto-animate slides cards in. For a café or clinic, 3 s is fast enough and much simpler.</p></div>
+      <div class="card" style="border-left:4px solid var(--violet)"><h3 class="c-violet">The beep is made in Python</h3><p>Not a downloaded file: <code>services/sound.py</code> writes three 880 Hz sine-wave beeps with the <code>wave</code> module.</p></div>
+<div class="code" style="font-size:10.5px"><span class="k">for</span> beep <span class="k">in</span> range(<span class="s">3</span>):
+  <span class="k">for</span> i <span class="k">in</span> range(int(RATE * <span class="s">0.18</span>)):
+    v = math.sin(<span class="s">2</span>*math.pi*<span class="s">880</span>*i/RATE)
+    samples.append(int(v * <span class="s">32767</span>))
+file.writeframes(struct.pack(...))  <span class="c"># /alert.wav</span></div>
+      <p style="font-size:11px;color:#666">Phones only allow sound after a tap, so the ticket has a "Tap to turn on alerts" button.</p>
+    </div>
+  </div><div class="pg">19</div>
+</section>
+
+<!-- 20 ANALYTICS PIPELINE -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-violet">Analytics: pandas → seaborn → SVG</h1>
+  <div class="row" style="gap:8px;align-items:center;margin:10px 0 14px">
+    <div class="layer" style="background:var(--amber)"><b>SQLite</b><span>tickets, ticket_items</span></div><b style="color:#999">→</b>
+    <div class="layer" style="background:var(--green)"><b>pandas DataFrame</b><span>pd.read_sql_query</span></div><b style="color:#999">→</b>
+    <div class="layer" style="background:var(--teal)"><b>New columns</b><span>wait_min · hour · weekday</span></div><b style="color:#999">→</b>
+    <div class="layer" style="background:var(--blue)"><b>charts.py</b><span>one function per chart</span></div><b style="color:#999">→</b>
+    <div class="layer" style="background:var(--violet)"><b>SVG in the page</b><span>cached 60 s</span></div>
+  </div>
+  <div class="row" style="gap:16px">
+    <table class="t" style="width:520px;font-size:11.5px">
+      <tr><th>Chart</th><th>Type</th><th>Library call</th><th>Answers</th></tr>
+      <tr><td>Joins per day</td><td>Line + fill</td><td><code>sns.lineplot</code></td><td>Is business growing?</td></tr>
+      <tr><td>How people join</td><td>Donut</td><td><code>ax.pie</code></td><td>QR vs NFC vs IP</td></tr>
+      <tr><td>Busiest times</td><td>Heatmap</td><td><code>sns.heatmap</code></td><td>Which day + hour</td></tr>
+      <tr><td>Wait by hour</td><td>Bar</td><td><code>sns.barplot</code></td><td>Slowest hour</td></tr>
+      <tr><td>Most selected</td><td>H-bar</td><td><code>sns.barplot</code></td><td>Top items</td></tr>
+      <tr><td>Line vs wait</td><td>Scatter + trend</td><td><code>sns.regplot</code></td><td>Longer line, longer wait?</td></tr>
+      <tr><td>Wait spread</td><td>Histogram + KDE</td><td><code>sns.histplot</code></td><td>Typical wait (median)</td></tr>
+      <tr><td>Done vs left</td><td>Stacked bar</td><td><code>multiple="stack"</code></td><td>When people give up</td></tr>
+    </table>
+    <div class="col" style="flex:1;gap:9px">
+      <div class="card" style="border-left:4px solid var(--violet)"><h3>Why SVG?</h3><p>Sharp at any size, uses our Inter font, and needs no chart JavaScript.</p></div>
+      <div class="card" style="border-left:4px solid var(--green)"><h3>Wait time in pandas</h3><p><code>called_at − joined_at</code> in minutes, per ticket.</p></div>
+      <div class="card" style="border-left:4px solid var(--amber)"><h3>Safe in a web server</h3><p>We use <code>Figure()</code>, not <code>plt.figure()</code>, because pyplot keeps global state.</p></div>
+    </div>
+  </div><div class="pg">20</div>
+</section>
+
+<!-- 21 CHARTS 1 -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-teal">Analytics: Real Output (1/2)</h1>
+  <div class="sub">Demo café "Encave": 30 days, 1,701 customers, average wait 4.6 min, busiest at 1 pm. Generated by our <code>charts.py</code>.</div>
+  <div class="row" style="gap:12px">
+    <div class="chart" style="flex:1.25"><div class="ct">Busiest times (heatmap)</div>{{busy_heatmap}}</div>
+    <div class="chart" style="flex:.75"><div class="ct">How people join (donut)</div>{{join_sources}}</div>
+  </div>
+  <div class="row" style="gap:12px;margin-top:10px">
+    <div class="chart" style="flex:1"><div class="ct">People joining per day</div>{{joins_per_day}}</div>
+    <div class="chart" style="flex:1"><div class="ct">Most selected from the menu</div>{{top_items}}</div>
+  </div><div class="pg">21</div>
+</section>
+
+<!-- 22 CHARTS 2 -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-teal">Analytics: Real Output (2/2)</h1>
+  <div class="sub">These turn a busy counter into decisions: when to add staff, what to stock, and when people give up.</div>
+  <div class="row" style="gap:12px">
+    <div class="chart" style="flex:1"><div class="ct">Wait time by hour</div>{{wait_by_hour}}</div>
+    <div class="chart" style="flex:1"><div class="ct">Longer line → longer wait? (scatter + trend)</div>{{queue_vs_wait}}</div>
+  </div>
+  <div class="row" style="gap:12px;margin-top:10px">
+    <div class="chart" style="flex:1"><div class="ct">How long people wait (histogram + KDE)</div>{{wait_distribution}}</div>
+    <div class="chart" style="flex:1"><div class="ct">Completed vs left, by weekday</div>{{outcome_by_weekday}}</div>
+  </div><div class="pg">22</div>
+</section>
+
+<!-- 23 SECURITY & TESTING -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-dark" style="color:var(--dark)">Security &amp; Testing</h1>
+  <div class="row" style="gap:18px;margin-top:10px">
+    <div style="flex:1" class="col">
+      <div class="mono c-red">Security</div>
+      <div class="card" style="padding:9px 12px">🔐 <b>Hashed passwords</b>, never plain text (Werkzeug)</div>
+      <div class="card" style="padding:9px 12px">🛡 <b>CSRF tokens</b> on every form and htmx request</div>
+      <div class="card" style="padding:9px 12px">⛔ <b>5 wrong passwords</b> → account locked 10 minutes</div>
+      <div class="card" style="padding:9px 12px">🧱 <b>business_id on every query</b>: no data leaks between shops</div>
+      <div class="card" style="padding:9px 12px">🖼 <b>Uploads</b>: JPEG/PNG/WebP under 4 MB, re-saved by Pillow (strips GPS), random name</div>
+      <div class="card" style="padding:9px 12px">🔗 <b>Links</b> must be https / http / upi: blocks <code>javascript:</code> tricks</div>
+    </div>
+    <div style="flex:1" class="col">
+      <div class="mono c-green">Testing</div>
+      <div class="card" style="text-align:center;background:var(--green);border:none;color:#fff"><div class="stat">17</div><div style="font-weight:700">pytest tests, each with a fresh temporary database</div></div>
+      <div class="card"><p>Sign up · lockout · every page/token combination · cookie resume · call / done / move / reorder · deleting lines · isolation between businesses · analytics with sample data</p></div>
+      <div class="code">$ python -m pytest -q
+<span class="s">.................  17 passed</span></div>
+      <div class="card" style="background:var(--light);border:none"><p><b>Demo data:</b> <code>flask seed-demo</code> creates <b>Encave</b> (café) and <b>Sociovate</b> (dental clinic) with 30 days of realistic history.</p></div>
+    </div>
+  </div><div class="pg">23</div>
+</section>
+
+<!-- 24 SDG -->
+<section class="slide"><div class="tag">dashQ</div>
+  <h1 class="c-green">SDG Mapping</h1>
+  <div class="sub">How dashQ supports the UN Sustainable Development Goals</div>
+  <div class="row" style="gap:16px;flex-wrap:wrap">
+    <div class="card row" style="width:428px;gap:14px;align-items:flex-start"><div style="background:#4c9f38;color:#fff;border-radius:8px;width:84px;height:84px;flex:none;text-align:center;padding-top:14px"><div style="font-size:12px;font-weight:700">SDG</div><div style="font-size:32px;font-weight:900">3</div></div><div><h3>Good Health and Well-being</h3><p>Calmer clinic waiting rooms: less crowding, less infection risk, and sick people can sit instead of stand.</p></div></div>
+    <div class="card row" style="width:428px;gap:14px;align-items:flex-start"><div style="background:#fd6925;color:#fff;border-radius:8px;width:84px;height:84px;flex:none;text-align:center;padding-top:14px"><div style="font-size:12px;font-weight:700">SDG</div><div style="font-size:32px;font-weight:900">9</div></div><div><h3>Industry, Innovation &amp; Infrastructure</h3><p>Low-cost digital tools for small businesses: a QR print-out and a ₹10 sticker, built on free software.</p></div></div>
+    <div class="card row" style="width:428px;gap:14px;align-items:flex-start"><div style="background:#dd1367;color:#fff;border-radius:8px;width:84px;height:84px;flex:none;text-align:center;padding-top:14px"><div style="font-size:12px;font-weight:700">SDG</div><div style="font-size:32px;font-weight:900">10</div></div><div><h3>Reduced Inequalities</h3><p>No app needed, and staff can add people without smartphones. First come, first served, fairly.</p></div></div>
+    <div class="card row" style="width:428px;gap:14px;align-items:flex-start"><div style="background:#fd9d24;color:#fff;border-radius:8px;width:84px;height:84px;flex:none;text-align:center;padding-top:14px"><div style="font-size:12px;font-weight:700">SDG</div><div style="font-size:32px;font-weight:900">11</div></div><div><h3>Sustainable Cities &amp; Communities</h3><p>Spreads people out of crowded counters as Indian cities grow towards 600 million people.</p></div></div>
+  </div><div class="pg">24</div>
+</section>
+
+<!-- 25 FUTURE + REFERENCES -->
+<section class="slide" style="background:var(--blue);color:#fff">
+  <div style="font:12px Menlo,monospace;position:absolute;top:28px;left:43px">Python Mini-Project</div>
+  <div class="tag" style="color:#fff">dashQ</div>
+  <div class="row" style="gap:30px;margin-top:34px">
+    <div style="flex:1">
+      <div style="font-size:30px;font-weight:800">What's next</div>
+      <ul class="b" style="margin-top:10px;color:var(--light)">
+        <li><span style="color:#fff">TV "Now serving" display for the counter</span></li>
+        <li><span style="color:#fff">Real SMS / WhatsApp alerts</span></li>
+        <li><span style="color:#fff">Several branches per business</span></li>
+        <li><span style="color:#fff">Wait-time prediction from history</span></li>
+        <li><span style="color:#fff">Postgres for larger scale</span></li>
+      </ul>
+    </div>
+    <div style="flex:1.6">
+      <div style="font-size:30px;font-weight:800">Research &amp; References</div>
+      <div style="font:10.5px/1.45 Menlo,monospace;margin-top:10px;color:#e8edff">
+      [1] M. Ghazal, R. Hamouda, S. Ali, "An IoT Smart Queue Management System with Real-Time Queue Tracking," 5th Intl. Conf. on e-Learning (econf), 2015.<br><br>
+      [2] "Mobile-Augmented Smart Queue Management System for Hospitals," IEEE 33rd Intl. Symp. on Computer-Based Medical Systems (CBMS), 2020.<br><br>
+      [3] A. Chydziński, "Waiting Time in a General Active Queue Management Scheme," IEEE Access, vol. 11, 2023.<br><br>
+      [4] "Waiting Time Prediction in Queue Management: Leveraging Machine Learning Approach," ICRPSET, 2024.</div>
+    </div>
+  </div>
+  <div style="position:absolute;left:43px;bottom:70px;font-size:34px;font-weight:800">Thank you! Questions?</div>
+  <div style="position:absolute;left:43px;bottom:46px;font-size:14px;color:var(--light)">dashQ makes in-person experiences as smooth as online ones.</div>
+  <img src="img/bldR.png" style="position:absolute;right:0;bottom:0;width:140px">
+</section>
+
+</body></html>
