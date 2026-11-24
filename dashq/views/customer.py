@@ -96,7 +96,7 @@ def show_extras(business, extras):
 # ---------- /b/<slug> ----------
 
 @ui.page("/b/{slug}")
-def start(slug: str, via: str = "qr"):
+def start(slug: str, via: str = ""):
     db = get_db()
     business = get_business_by_slug(db, slug)
     if business is None:
@@ -115,12 +115,16 @@ def start(slug: str, via: str = "qr"):
             if old is not None and old["status"] == "done" and queue.minutes_since(old["finished_at"]) < 30:
                 return RedirectResponse(f"/b/{slug}/t/{old['code']}")
         if not progress.get("code"):
+            # No ticket yet: trust how they came in this time (NFC sticker or QR)
+            if via in ("qr", "nfc"):
+                progress["via"] = via
+                save_progress(slug, progress)
             if progress.get("page", 0) >= len(page_names):
                 join_flow.issue_ticket_if_due(db, business, settings, progress, "end")
                 save_progress(slug, progress)
             return go_to(slug, progress, page_names)
 
-    progress = join_flow.start(db, business, settings, via)
+    progress = join_flow.start(db, business, settings, via or "qr")
     save_progress(slug, progress)
     return go_to(slug, progress, page_names)
 
@@ -463,11 +467,13 @@ def leave(slug, code):
     ticket = queue.get_ticket_by_code(db, business["id"], code)
     if ticket is not None:
         queue.leave_ticket(db, business["id"], ticket["id"])
+    via = (get_progress(slug) or {}).get("via", "qr")
     forget_progress(slug)
     flash_later("You left the line. Scan again any time to rejoin.")
-    ui.navigate.to(f"/b/{slug}")
+    ui.navigate.to(f"/b/{slug}?via={via}")
 
 
 def again(slug):
+    via = (get_progress(slug) or {}).get("via", "qr")
     forget_progress(slug)
-    ui.navigate.to(f"/b/{slug}")
+    ui.navigate.to(f"/b/{slug}?via={via}")

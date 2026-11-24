@@ -45,7 +45,7 @@ def qr_png(request: Request, slug: str, via: str = "qr", download: int = 0):
     if business is None:
         raise HTTPException(404)
     # The QR code holds the customer link, e.g. https://dashq.azurewebsites.net/b/encave-cafe
-    link = str(request.base_url).rstrip("/") + f"/b/{slug}" + ("?via=nfc" if via == "nfc" else "")
+    link = str(request.base_url).rstrip("/") + f"/b/{slug}?via=" + ("nfc" if via == "nfc" else "qr")
     headers = {}
     if download:
         headers["Content-Disposition"] = f'attachment; filename="dashq-{slug}.png"'

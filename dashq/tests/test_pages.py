@@ -44,3 +44,17 @@ async def test_home_page(user: User):
     await user.open("/")
     await user.should_see("Features coming")
     await user.should_see("SMS alerts")
+
+
+async def test_nfc_tap_after_unfinished_qr_visit_counts_as_nfc(user: User):
+    db = database.get_db()
+    business_id, error = accounts.create_business(db, "Ravi Cafe", "ravi@cafe.test", "password123", "Cafe")
+    business = accounts.get_business(db, business_id)
+
+    await user.open(f"/b/{business['slug']}?via=qr")
+    await user.open(f"/b/{business['slug']}?via=nfc")
+    user.find("Your name").type("Meera")
+    user.find("Get my token").click()
+    await user.should_see("YOUR TOKEN")
+    row = db.execute("SELECT source FROM tickets WHERE business_id = ?", (business_id,)).fetchone()
+    assert row["source"] == "nfc"
