@@ -1,0 +1,15 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.env
+
+# Local data and old versions (not for the repo)
+dashq/data/
+_archive/
+.claude/
+*.zip
+.DS_Store
+PLAN_dashQ_v2.md
+docs/

@@ -1,0 +1,103 @@
+{% import "components/ui.html" as ui %}
+{# The live part of the dashboard. Sent on first load, every 3 seconds, and after every button press. #}
+
+<section class="card stats" id="stats">
+  <div class="stat">
+    <div class="label">{{ ui.icon("users") }}Waiting now</div>
+    <div class="value" id="n-waiting">{{ numbers.waiting }}<small>in line</small></div>
+    <div class="hint">across {{ lines|length }} line{{ "s" if lines|length != 1 }}</div>
+  </div>
+  <div class="stat">
+    <div class="label">{{ ui.icon("flag") }}Joined today</div>
+    <div class="value">{{ numbers.joined }}<small>people</small></div>
+    <div class="hint">QR, NFC and in person</div>
+  </div>
+  <div class="stat">
+    <div class="label">{{ ui.icon("check") }}Completed today</div>
+    <div class="value">{{ numbers.served }}<small>done</small></div>
+    <div class="hint">marked done by your team</div>
+  </div>
+  <div class="stat">
+    <div class="label">{{ ui.icon("clock") }}Average wait today</div>
+    <div class="value">{{ numbers.avg_wait }}<small>min</small></div>
+    <div class="hint">from joining to being called</div>
+  </div>
+</section>
+
+<div class="board" id="board">
+  {% for line in lines %}
+  <section class="lane" id="lane-{{ line.id }}">
+    <div class="lane-head">
+      <div class="spread">
+        <div class="lane-name">{{ line.name }} <span class="count light">{{ line.tickets|length }}</span>
+          {% if line.is_entry %}<span class="entry">New joins</span>{% endif %}</div>
+      </div>
+      <div class="lane-actions">
+        <button class="btn sm" hx-post="{{ url_for('dashboard.call_next', line_id=line.id) }}" hx-target="#live" hx-swap="morph:innerHTML"
+                {% if not line.tickets %}disabled{% endif %}>{{ ui.icon("megaphone") }}Call next</button>
+      </div>
+    </div>
+
+    {# data-line tells SortableJS (board.js) which line a card was dropped into #}
+    <ul class="lane-list" id="list-{{ line.id }}" data-line="{{ line.id }}">
+      {% for t in line.tickets %}
+      <li class="ticket-card {% if t.status == 'called' %}is-called{% endif %} {% if t.minutes == 0 %}is-fresh{% endif %}"
+          id="t-{{ t.id }}" data-id="{{ t.id }}">
+        <div class="top">
+          <span class="token">{{ t.token }}</span>
+          <div class="who">
+            <b>{{ t.name or "Guest" }}</b>
+            <span>{% if t.minutes == 0 %}just now{% elif t.minutes < 60 %}{{ t.minutes }} min ago{% else %}{{ t.minutes // 60 }} h {{ t.minutes % 60 }} min ago{% endif %}{% if t.phone %} · {{ t.phone }}{% endif %}</span>
+          </div>
+          {{ ui.source_chip(t.source) }}
+        </div>
+        {% if t.order %}
+        <div class="items">{% for item in t.order %}<span>{% if item.quantity > 1 %}{{ item.quantity }}× {% endif %}{{ item.name }}</span>{% endfor %}</div>
+        {% endif %}
+        {% if t.note %}<div class="small muted">“{{ t.note }}”</div>{% endif %}
+        {% if t.alert_stopped %}<div class="small muted">Customer stopped the alert</div>{% endif %}
+        <div class="acts">
+          {% if t.status == 'called' and t.alert_stopped %}
+            <button class="btn ghost sm resend" hx-post="{{ url_for('dashboard.resend_alert', ticket_id=t.id) }}" hx-target="#live" hx-swap="morph:innerHTML">{{ ui.icon("bell") }}Resend alert</button>
+          {% elif t.status == 'called' %}
+            <span class="chip called">{{ ui.icon("bell") }}Called</span>
+          {% else %}
+            <button class="btn ghost sm" hx-post="{{ url_for('dashboard.call', ticket_id=t.id) }}" hx-target="#live" hx-swap="morph:innerHTML">Call</button>
+          {% endif %}
+          <button class="btn sm" hx-post="{{ url_for('dashboard.done', ticket_id=t.id) }}" hx-target="#live" hx-swap="morph:innerHTML">{{ ui.icon("check") }}Done</button>
+          {% if lines|length > 1 %}
+          <select class="move" name="line_id" aria-label="Move to another line"
+                  hx-post="{{ url_for('dashboard.move', ticket_id=t.id) }}" hx-trigger="change" hx-target="#live" hx-swap="morph:innerHTML">
+            {% for other in lines %}<option value="{{ other.id }}" {% if other.id == line.id %}selected{% endif %}>{% if other.id == line.id %}In {{ other.name }}{% else %}→ {{ other.name }}{% endif %}</option>{% endfor %}
+          </select>
+          {% else %}<span class="move"></span>{% endif %}
+          <button class="icon-btn plain" title="Remove from line" aria-label="Remove from line"
+                  hx-post="{{ url_for('dashboard.remove', ticket_id=t.id) }}" hx-target="#live" hx-swap="morph:innerHTML"
+                  hx-confirm="Remove {{ t.token }} from the line?">{{ ui.icon("trash") }}</button>
+        </div>
+      </li>
+      {% endfor %}
+      <li class="lane-empty" id="empty-{{ line.id }}">Empty. Drag a card here or add someone below.</li>
+    </ul>
+
+    <details class="add-ip" id="add-{{ line.id }}">
+      <summary>{{ ui.icon("plus") }}Add in person</summary>
+      <form hx-post="{{ url_for('dashboard.add_in_person', line_id=line.id) }}" hx-target="#live" hx-swap="morph:innerHTML" class="stack" style="gap:6px">
+        <div class="row"><input class="input" name="name" placeholder="Name" maxlength="60"><input class="input" name="phone" placeholder="Phone (optional)" maxlength="20"></div>
+        <div class="row"><input class="input" name="note" placeholder="Note (optional)" maxlength="200"><button class="btn sm" type="submit">Add</button></div>
+        {% if list_items %}
+        <div class="ip-items" aria-label="Items">
+          {% for item in list_items %}
+          <label><span>{{ item.name }}</span><input type="number" name="qty_{{ item.id }}" min="0" max="20" value="0" inputmode="numeric"></label>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </form>
+    </details>
+  </section>
+  {% endfor %}
+</div>
+
+{% if just_called %}
+<div class="toast" id="toast-{{ just_called.id }}">{{ ui.icon("megaphone") }}<span>Calling</span><b>{{ just_called.token }}</b><span>{{ just_called.name or "" }}</span></div>
+{% endif %}

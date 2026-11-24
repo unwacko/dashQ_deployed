@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% import "components/ui.html" as ui %}
+{% block title %}dashQ · Queues without an app{% endblock %}
+{% block body_class %}landing{% endblock %}
+{% block body %}
+
+<div class="hero-bg">
+  <div class="wrap">
+    <nav class="l-nav">
+      {{ ui.logo() }}
+      <div class="links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#customers">Customers</a>
+        <a href="#coming">Coming soon</a>
+      </div>
+      <div class="ctas">
+        <a class="btn ghost" href="{{ url_for('auth.login') }}">Log in</a>
+        <a class="btn" href="{{ url_for('auth.signup') }}">Sign up</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div>
+        <h1>Run your queue<br>from a laptop.<br>No app needed.</h1>
+        <p class="lead">Customers join by QR code, NFC sticker or at the counter. They can pick from your menu, see their place in line, and get an alert on their phone when it's their turn.</p>
+        <form class="hero-form" method="get" action="{{ url_for('auth.signup') }}">
+          <input class="input" type="email" name="email" placeholder="Your business email" aria-label="Your business email">
+          <button class="btn" type="submit">Get started {{ ui.icon("arrow-up-right") }}</button>
+        </form>
+        <div class="logo-row">
+          <span class="eyebrow">Starting with</span>
+          <b><i style="background:#8B5E3C">E</i>Encave</b>
+          <b><i style="background:#1E1E1E">S</i>Sociovate</b>
+        </div>
+      </div>
+
+      {# A moving picture of the product, made with plain HTML and CSS animations #}
+      <div class="hero-mock" aria-hidden="true">
+        <div class="card mock-board">
+          <div class="spread"><b style="font-weight:600">Ordered</b><span class="count light">3</span></div>
+          <div class="ticket-card is-fresh mock-slide"><div class="top"><span class="token">014</span><div class="who"><b>Tanvi</b><span>just now</span></div>{{ ui.source_chip("qr") }}</div>
+            <div class="items"><span>Cold coffee</span><span>Veg sandwich</span></div></div>
+          <div class="ticket-card"><div class="top"><span class="token">013</span><div class="who"><b>Omkar</b><span>3 min ago</span></div>{{ ui.source_chip("nfc") }}</div>
+            <div class="items"><span>Cheese maggi</span></div></div>
+          <div class="ticket-card is-called"><div class="top"><span class="token">012</span><div class="who"><b>Riya</b><span>6 min ago</span></div>{{ ui.source_chip("ip") }}</div></div>
+        </div>
+        <div class="mock-phone">
+          <div class="small" style="opacity:.75">Encave Cafe · your token</div>
+          <div class="t">014</div>
+          <div class="spread small" style="margin-bottom:8px;opacity:.85"><span>2 ahead of you</span><span>~8 min</span></div>
+          <div class="bar"><i></i></div>
+        </div>
+        <div class="mock-turn"><span class="pulse"></span><span><b style="font-weight:600">012, it's your turn</b><br><span class="small" style="opacity:.7">Sound, vibration, red screen</span></span></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="wrap">
+  <section class="card float-card reveal" id="features">
+    <div class="top">
+      <div><div class="eyebrow blue">Triple servicing</div><h2>Three ways to join</h2></div>
+      <p class="muted" style="align-self:end">All three end up on the same board, marked QR, NFC or IP, so you can see how each person joined.</p>
+    </div>
+    <div class="feature-3">
+      <div><div class="ico">{{ ui.icon("qr") }}</div><b>Scan a QR code</b><p>Put it on a table, door or bill. It opens in the phone's browser.</p></div>
+      <div><div class="ico">{{ ui.icon("nfc") }}</div><b>Tap an NFC sticker</b><p>Put it on the counter. The customer taps their phone on it to join.</p></div>
+      <div><div class="ico">{{ ui.icon("person") }}</div><b>Join in person</b><p>Staff add walk-ins and phone calls from the dashboard.</p></div>
+    </div>
+  </section>
+</div>
+
+<section class="section" id="how">
+  <div class="wrap">
+    <div class="section-head reveal"><div class="eyebrow blue">Features</div><h2>What you get</h2></div>
+    <div class="why">
+      <div class="card reveal">
+        <div class="big">3 pages</div>
+        <p style="font-size:17px;margin-top:22px">Details → list → links and text.<br><span class="muted">Turn each page on or off.</span></p>
+      </div>
+      <div class="card reveal">
+        <p style="font-size:17px">Several lines on one board.<br><span class="muted">For example Ordered → Preparing → Ready. Customers see which line they are in.</span></p>
+        <div class="flow-icons">
+          <span class="bubble" style="background:var(--blue)">{{ ui.icon("qr") }}</span>
+          <span class="arrow"></span>
+          <span class="bubble" style="background:var(--dark)">{{ ui.icon("board") }}</span>
+          <span class="arrow"></span>
+          <span class="bubble" style="background:#DC2626">{{ ui.icon("bell") }}</span>
+        </div>
+      </div>
+      <div class="card wide reveal">
+        <div>
+          <p style="font-size:17px">Analytics</p>
+          <p class="muted small" style="margin-top:8px;max-width:260px">Wait times, busiest hours and most picked items, from your own data.</p>
+        </div>
+        <div class="mini-chart">
+          <div class="spread small"><span class="muted">Average wait</span><span class="muted">sample data</span></div>
+          <div style="font-family:var(--font-display);font-size:26px;letter-spacing:-.03em;margin:4px 0">6.2 min <span class="chip ok" style="vertical-align:middle">▼ 18%</span></div>
+          <svg viewBox="0 0 400 150" preserveAspectRatio="none">
+            <defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1F48FF" stop-opacity=".22"/><stop offset="1" stop-color="#1F48FF" stop-opacity="0"/></linearGradient></defs>
+            <path d="M0 40 L60 55 L120 50 L180 80 L240 85 L300 100 L360 110 L400 118 L400 150 L0 150 Z" fill="url(#fade)"/>
+            <path class="line" d="M0 40 L60 55 L120 50 L180 80 L240 85 L300 100 L360 110 L400 118" fill="none" stroke="#1F48FF" stroke-width="2.5"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="dark-band section">
+  <div class="wrap">
+    <div class="eyebrow">Setup</div>
+    <h2>Three steps to start</h2>
+    <div class="step-cards">
+      <div class="card reveal"><div class="n">1</div><b>Make your account</b><p>Sign up with your email. You get a join link and a QR code.</p></div>
+      <div class="card reveal"><div class="n">2</div><b>Set up your pages</b><p>Choose which details to ask for, add a list of items or services, and add links or text. Or turn them off and only give tokens.</p></div>
+      <div class="card reveal"><div class="n">3</div><b>Put up the QR code</b><p>Print the QR code or write the link to an NFC sticker. Run the line from the dashboard.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="customers">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div class="eyebrow blue">First customers</div>
+      <h2>Who is using dashQ</h2>
+      <p>Both are setting up dashQ now. These are the features they plan to use.</p>
+    </div>
+
+    <div class="customers">
+      <article class="card cust reveal">
+        <div class="who"><span class="avatar" style="background:#F5EDE6;color:#8B5E3C;border-color:#EADBCD">EN</span><div><h3>Encave</h3><div class="sub">Cafe inside MIT-WPU, Pune</div></div></div>
+        <p class="muted">The counter gets crowded between lectures. Students will book and order from their phone and get an alert when the food is ready.</p>
+        <ul>
+          <li>{{ ui.icon("check") }}Booking from a QR code on each table</li>
+          <li>{{ ui.icon("check") }}Menu on the phone, ordered while joining</li>
+          <li>{{ ui.icon("check") }}“Preparing” and “Ready to collect” shown to customers</li>
+          <li>{{ ui.icon("check") }}Each customer's items shown on the dashboard</li>
+        </ul>
+        <div class="note">Not live yet</div>
+      </article>
+
+      <article class="card cust blue reveal">
+        <div class="who"><span class="avatar">SO</span><div><h3>Sociovate</h3><div class="sub">Marketing agency for dental clinics</div></div></div>
+        <p class="muted">Patients see their place in line and an estimated wait. The front desk calls the next patient from the dashboard.</p>
+        <ul>
+          <li>{{ ui.icon("check") }}Queue management for each partner clinic</li>
+          <li>{{ ui.icon("check") }}Estimated wait times</li>
+          <li>{{ ui.icon("check") }}Waiting room → With the doctor, on one board</li>
+          <li>{{ ui.icon("check") }}Walk-ins and phone bookings added by staff</li>
+        </ul>
+        <div class="note">Not live yet</div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="coming" style="padding-top:20px">
+  <div class="wrap">
+    <div class="section-head reveal"><div class="eyebrow blue">Coming soon</div><h2>Features coming</h2></div>
+    <div class="coming">
+      <div class="card reveal"><div class="ico">{{ ui.icon("text") }}</div><b>SMS alerts</b><p class="muted small">A text message when it's the customer's turn.</p></div>
+      <div class="card reveal"><div class="ico">{{ ui.icon("phone") }}</div><b>Calling</b><p class="muted small">An automatic phone call when it's their turn.</p></div>
+      <div class="card reveal"><div class="ico">{{ ui.icon("settings") }}</div><b>More customisation</b><p class="muted small">More control over your pages, lines and dashboard.</p></div>
+      <div class="card reveal"><div class="ico">{{ ui.icon("board") }}</div><b>Features for your business</b><p class="muted small">Features built for how your business works.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="cta-card reveal">
+    <div>
+      <div class="eyebrow" style="color:rgba(255,255,255,.5)">Start</div>
+      <h2>Try dashQ</h2>
+      <p>Sign up and set up your first line. It's free while in beta.</p>
+    </div>
+    <div class="row">
+      <a class="btn" href="{{ url_for('auth.signup') }}">Sign up</a>
+      <a class="btn ghost" href="{{ url_for('auth.login') }}">See a sample {{ ui.icon("arrow-up-right") }}</a>
+    </div>
+  </section>
+
+  <footer class="l-foot">
+    <div>{{ ui.logo() }}<p class="muted small" style="margin-top:10px;max-width:260px">Queues, lists and turn alerts for cafes, clinics and counters.</p></div>
+    <div><b>Product</b><a href="#features">Features</a><a href="#how">How it works</a><a href="#coming">Coming soon</a></div>
+    <div><b>Made for</b><a href="#customers">Cafes</a><a href="#customers">Clinics</a><a href="#customers">Agencies</a></div>
+    <div><b>Account</b><a href="{{ url_for('auth.signup') }}">Sign up</a><a href="{{ url_for('auth.login') }}">Log in</a></div>
+  </footer>
+</div>
+<div class="copyright">© dashQ 2026</div>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='js/reveal.js') }}"></script>{% endblock %}

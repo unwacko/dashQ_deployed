@@ -1,0 +1,44 @@
+{% extends "dashboard/layout.html" %}
+{% block title %}Live queue · {{ g.business.name }}{% endblock %}
+{% block crumb %}<span class="sep">·</span><span class="page">Live queue</span>{% endblock %}
+
+{% block main %}
+{% if welcome %}
+<section class="card welcome">
+  <div class="left">
+    <div class="eyebrow blue">Welcome to dashQ</div>
+    <h2 style="font-size:22px;margin-top:6px">Your queue is ready. Set up these three things:</h2>
+    <div class="steps-mini">
+      <a href="{{ url_for('dashboard.settings', tab='pages') }}"><span class="n">1</span>Choose what customers fill in (name, phone, list)<span class="grow"></span>{{ ui.icon("chev-right") }}</a>
+      <a href="{{ url_for('dashboard.settings', tab='lines') }}"><span class="n">2</span>Add lines, e.g. Ordered → Preparing → Ready<span class="grow"></span>{{ ui.icon("chev-right") }}</a>
+      <a href="{{ url_for('dashboard.qr_png', download=1) }}"><span class="n">3</span>Print the QR code or write the NFC link to a sticker<span class="grow"></span>{{ ui.icon("download") }}</a>
+    </div>
+  </div>
+  <div class="right">
+    <div class="share">
+      <img src="{{ url_for('dashboard.qr_png') }}" alt="Your QR code">
+      <div class="stack" style="gap:8px;flex:1">
+        <div class="small muted">QR link</div>
+        <div class="copy-field"><input class="input" readonly value="{{ qr_link }}"></div>
+        <div class="small muted">NFC sticker link</div>
+        <div class="copy-field"><input class="input" readonly value="{{ nfc_link }}"></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# Everything inside #live is refreshed every 3 seconds. "morph" only changes what is different,
+   so cards that stay put don't flicker, and new ones animate in. #}
+<div id="live"
+     hx-get="{{ url_for('dashboard.live') }}"
+     hx-trigger="every 3s"
+     hx-swap="morph:innerHTML">
+  {% include "dashboard/_live.html" %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="module" src="{{ url_for('static', filename='js/board.js') }}"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% import "components/ui.html" as ui %}
+{% block title %}{{ business.name }} · dashQ{% endblock %}
+{% block body_class %}customer{% endblock %}
+{% block body %}
+<div class="phone">
+  <header class="biz-head">
+    <div class="biz-icon">{{ ui.initials(business.name) }}</div>
+    <div class="grow">
+      <h1>{{ business.name }}</h1>
+      {% if business.address %}<div class="small muted">{{ business.address }}</div>{% endif %}
+    </div>
+  </header>
+  {{ ui.flashes() }}
+  {% block content %}{% endblock %}
+  <p class="foot-note">Made with <a href="/">dashQ</a></p>
+</div>
+{% endblock %}

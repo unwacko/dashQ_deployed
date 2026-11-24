@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block title %}dashQ{% endblock %}</title>
+  <link rel="preload" href="{{ url_for('static', filename='fonts/Inter-Regular.woff2') }}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashq.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  {#
+    Libraries do the hard parts, so our own code stays small:
+    - htmx: buttons and forms talk to Flask and swap in the HTML it sends back,
+      and parts of the page refresh themselves every few seconds.
+    - idiomorph: when htmx swaps, only the parts that changed are touched.
+    - auto-animate: any list that changes (someone joins, leaves, moves) animates smoothly.
+    - SortableJS: drag and drop.
+  #}
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/idiomorph@0.7.3/dist/idiomorph-ext.min.js"></script>
+  {% block head %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}" hx-ext="morph" hx-headers='{"X-CSRFToken": "{{ csrf_token() }}"}'>
+  {% block body %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

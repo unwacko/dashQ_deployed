@@ -1,0 +1,79 @@
+{% extends "customer/layout.html" %}
+{% block content %}
+
+<div class="progress-steps" aria-label="Step {{ step }} of {{ total }}">
+  {% for n in range(1, total + 1) %}<span class="{% if n < step %}done{% elif n == step %}now{% endif %}"></span>{% endfor %}
+</div>
+
+{# If the token was already handed out, show it on every page #}
+{% if ticket %}
+<a class="token-banner" href="{{ url_for('customer.ticket', slug=business.slug, code=ticket.code) }}" style="text-decoration:none">
+  <div><div class="small" style="opacity:.7">You're in line · token</div><b>{{ ticket.token }}</b></div>
+  <span class="small" style="opacity:.8">View status →</span>
+</a>
+{% endif %}
+
+<form method="post" class="join-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  {# ---------- page 1: details ---------- #}
+  {% if page == "details" %}
+    <div>
+      <h2 class="page-title">{{ settings.welcome_text or "Join the line" }}</h2>
+      <p class="muted" style="margin-top:6px">{% if ticket %}Add your details so the team knows it's you.{% else %}Takes ten seconds. No app, no sign-up.{% endif %}</p>
+    </div>
+    <section class="card card-pad stack">
+      {% for field, label, kind, place in [("name", "Your name", "text", "e.g. Priya"), ("phone", "Phone number", "tel", "e.g. 98765 43210"), ("email", "Email", "email", "you@example.com")] %}
+        {% if settings["ask_" ~ field] != "off" %}
+        <label class="field">{{ label }} {% if settings["ask_" ~ field] == "optional" %}<span class="hint">optional</span>{% endif %}
+          <input class="input big" type="{{ kind }}" name="{{ field }}" placeholder="{{ place }}"
+                 value="{{ progress.get(field, '') }}" {% if settings["ask_" ~ field] == "required" %}required{% endif %}
+                 autocomplete="{{ 'name' if field == 'name' else ('tel' if field == 'phone' else 'email') }}" maxlength="120">
+        </label>
+        {% endif %}
+      {% endfor %}
+    </section>
+
+  {# ---------- page 2: the list ---------- #}
+  {% elif page == "list" %}
+    <div>
+      <h2 class="page-title">{{ settings.list_title }}</h2>
+      <p class="muted" style="margin-top:6px">{% if settings.list_multi == "1" %}Pick as many as you like.{% else %}Pick one.{% endif %}</p>
+    </div>
+    {% for category, items in groups %}
+      <div class="menu-cat">{{ category }}</div>
+      <section class="card">
+        {% for item in items %}
+        <label class="menu-item {% if settings.list_multi != '1' %}radio-item{% endif %}">
+          <div class="info"><b>{{ item.name }}</b>{% if item.description %}<span>{{ item.description }}</span>{% endif %}</div>
+          {% if item.price %}<span class="price">{{ item.price }}</span>{% endif %}
+          {% if settings.list_multi == "1" %}
+          <div class="stepper" data-stepper>
+            <button type="button" data-step="-1" aria-label="Less">−</button>
+            <input type="number" name="qty_{{ item.id }}" value="{{ chosen.get(item.id, 0) }}" min="0" max="20" inputmode="numeric" aria-label="How many {{ item.name }}">
+            <button type="button" data-step="1" aria-label="More">+</button>
+          </div>
+          {% else %}
+          <input type="radio" name="choice" value="{{ item.id }}" {% if chosen.get(item.id) %}checked{% endif %}>
+          {% endif %}
+        </label>
+        {% endfor %}
+      </section>
+    {% endfor %}
+
+  {# ---------- page 3: links, pictures and text ---------- #}
+  {% elif page == "extras" %}
+    <h2 class="page-title">{{ settings.extras_title }}</h2>
+    {% include "customer/_extras.html" %}
+  {% endif %}
+
+  <div class="sticky-foot stack" style="gap:8px">
+    <button class="btn big block" type="submit">
+      {% if not ticket and (settings.token_moment == page or step == total - 1) %}Get my token{% else %}Continue{% endif %} {{ ui.icon("arrow-right") }}
+    </button>
+    {% if back %}<a class="btn ghost block" href="{{ back }}">Back</a>{% endif %}
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='js/stepper.js') }}"></script>{% endblock %}

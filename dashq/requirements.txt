@@ -1,0 +1,11 @@
+flask
+flask-wtf
+gunicorn
+pandas
+numpy
+matplotlib
+seaborn
+qrcode[pil]
+pillow
+tzdata
+pytest
